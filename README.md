@@ -13,9 +13,10 @@ Collected data is sent with MQTT.
  
 We can see all data in graph and which program is running with Node-RED.
 
-![graph](images/graph.png)
+<img src="images/graph.png" width="620px">
 
-![working](images/working.png)
+<img src="images/working.png" width="320px">
+
  
 # Requirement
  
