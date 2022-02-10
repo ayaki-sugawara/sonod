@@ -10,9 +10,12 @@ class Pub():
 
   def on_connect(self, client, userdata, flag, rc):#process when we connect to broker
     print("Connected with result code " + str(rc))
-    client.publish("topic", "message", 0)
+    self.client.publish("topic", "message", 0)
 
   def on_disconnect(self, client, userdata, flag, rc):
     if rc!=0: 
        print("Unexpected disconnection.")
+
+  def publish(self, topic, message):
+    self.client.publish(topic, message, 0)
 

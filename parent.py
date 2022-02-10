@@ -30,14 +30,11 @@ def detectNACK(AckOrNack:int):
     print("====Some command was not acceptted correctly====")
 
 class NtfyDelegate(btle.DefaultDelegate):
-  def __init__(self, params, name):
+  def __init__(self, params, name, pub):
     btle.DefaultDelegate.__init__(self)
     self.idx = -1 #we use this value for checking data was received correctly;
-    self.mqtt = Pub()
+    self.mqtt = pub
     self.name = name
-
-  def publish(self, topic, message):
-      self.mqtt.client.publish(topic, message) 
 
   def handleNotification(self, cHandle, data):
     cal = binascii.b2a_hex(data)
@@ -56,7 +53,7 @@ class NtfyDelegate(btle.DefaultDelegate):
         "rssi": rssi,
         "sensor": self.name
       }
-      self.publish("status", json.dumps(sendData))
+      self.mqtt.publish("status", json.dumps(sendData))
       detectNACK(ack)
 
     if int((cal[0:2]), 16) == 0xf2:#data packet 1 p.42
@@ -100,7 +97,7 @@ class NtfyDelegate(btle.DefaultDelegate):
         "timestamp": timestamp
       }
 
-      self.publish("data", json.dumps(sendData))
+      self.mqtt.publish("data", json.dumps(sendData))
     return 0
 
 class AlpsSensor(Peripheral):
@@ -109,17 +106,23 @@ class AlpsSensor(Peripheral):
     self.result = 1
 
 class Sensor():
-  def __init__(self, addr, name=None):#initialize sensor
+  def __init__(self, addr, name=None, pub=None):
     self.alps= AlpsSensor(addr)
     self.addr = addr
     if name == None:
       name = addr
-    self.alps.setDelegate(NtfyDelegate(btle.DefaultDelegate, name))
+    self.alps.setDelegate(NtfyDelegate(btle.DefaultDelegate, name, pub))
     self.sendCommand(1, [0x01, 0x00])#custom1 enable
     self.sendCommand(2, [0x01, 0x00])#custom2 enable
     self.count = 0 # we can use this for some purpose like fixing time automatically
-    with open('state/{}.txt'.format(name), mode='w') as f:
-      f.write(str(os.getpid()))
+    self.mqtt = pub
+    sendDate = {
+      "sensor": name,
+      "pid": str(os.getpid())
+    }
+    self.mqtt.publish("state", json.dumps(sendDate))
+    #with open('state/{}.txt'.format(name), mode='w') as f:
+      #f.write(str(os.getpid()))
   
   def initialize(self):
     self.controlMeasurement()#stop measuring
