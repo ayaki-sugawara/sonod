@@ -15,7 +15,7 @@ We can see all data in graph and which program is running with Node-RED.
 
 <img src="images/graph.png" width="620px">
 
-<img src="images/graph.png" width="320px">
+<img src="images/work.png" width="320px">
 
 # Requirement
  
