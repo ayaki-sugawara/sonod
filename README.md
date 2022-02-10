@@ -26,7 +26,7 @@ This program requires these libraries.
  
 # Installation
  
- You can install all libraries using below code.
+ You can install all libraries using the code below.
  
 ```bash
 pip3 install -r requirement.txt
@@ -66,7 +66,7 @@ sudo apt install tmux -y
 
 In my experiment, Raspberry Pi can connect only 10 sensors at the same time.
 
-When an error occur, try below. Then, Restart All Program.
+When an error occur, try code below. Then, Restart All Program.
 
 ```bash
 sudo bluetoothctl
