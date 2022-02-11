@@ -1,0 +1,2116 @@
+[
+    {
+        "id": "6170f728d9918af4",
+        "type": "tab",
+        "label": "フロー 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "6d4fa3cbcd30608a",
+        "type": "mqtt in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "topic": "data",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "b8bb310206b263d4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 80,
+        "wires": [
+            [
+                "56473e3bbd3f3f26"
+            ]
+        ]
+    },
+    {
+        "id": "ea64e07825aeb64a",
+        "type": "debug",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "56473e3bbd3f3f26",
+        "type": "json",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 290,
+        "y": 80,
+        "wires": [
+            [
+                "497fa704e6e1c733",
+                "f3388b0f018aa699"
+            ]
+        ]
+    },
+    {
+        "id": "497fa704e6e1c733",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "ファイル書き込み前準備",
+        "func": "let data = msg.payload.data;\nlet timestamp = msg.payload.timestamp;\nlet sensor = msg.payload.sensor;\nlet place = msg.payload.place;\nmsg.filename = `/home/ayaki/sonod/data/${place}/${timestamp.substr(0,7)}.csv`\nmsg.payload = [timestamp, sensor];\nfor (var key in data){\n    msg.payload.push(data[key])\n}\nmsg.payload = msg.payload.join();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 80,
+        "wires": [
+            [
+                "d6e63acb8eb8b43a"
+            ]
+        ]
+    },
+    {
+        "id": "d6e63acb8eb8b43a",
+        "type": "file",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 720,
+        "y": 80,
+        "wires": [
+            [
+                "ea64e07825aeb64a"
+            ]
+        ]
+    },
+    {
+        "id": "5d8ea3095cf44ad1",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Temperature",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 890,
+        "y": 140,
+        "wires": [
+            [
+                "bb681a6f0db41af7"
+            ]
+        ]
+    },
+    {
+        "id": "bb681a6f0db41af7",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "35b084e00d42b1fa",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Temperature",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "10",
+        "ymax": "30",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1250,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d90d75bef0a4e60f",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Humidity",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 900,
+        "y": 180,
+        "wires": [
+            [
+                "c3d19ba532ec3f47"
+            ]
+        ]
+    },
+    {
+        "id": "c3d19ba532ec3f47",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "f5a14ffd55f6c590",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Humidity",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1240,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d70c5c360acb7276",
+        "type": "mqtt in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "topic": "status",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "b8bb310206b263d4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 480,
+        "wires": [
+            [
+                "0e79ce4e5359ddf9"
+            ]
+        ]
+    },
+    {
+        "id": "7ce8aa013a756d9b",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "ファイル書き込み前準備",
+        "func": "// ローカル現在時刻の取得\nconst nowLocal = new Date()    // Wed Apr 22 2020 22:39:03 GMT+0900 (Japan Standard Time)\n\n// UTCとローカルタイムゾーンとの差を取得し、分からミリ秒に変換\nconst diff = nowLocal.getTimezoneOffset() * 60 * 1000    // -540 * 60 * 1000 = -32400000\n\n// toISOString()で、UTC時間になってしまう（-9時間）ので、日本時間に9時間足しておく\nconst plusLocal = new Date(nowLocal - diff)    // Thu Apr 23 2020 07:39:03 GMT+0900 (Japan Standard Time)\n\n// ISO形式に変換（UTCタイムゾーンで日本時間、というよくない状態）\nlet iso = plusLocal.toISOString()   // \"2020-04-22T22:39:03.397Z\"\n\n// UTCタイムゾーン部分は消して、日本のタイムゾーンの表記を足す\niso = iso.slice(0, 19) + '+09:00'    // \"2020-04-22T22:39:03+09:00\"\n\nlet timestamp = iso;\nlet sensor = msg.payload.sensor;\nlet battery = msg.payload.battery;\nlet rssi = msg.payload.rssi;\nlet place = msg.payload.place;\nmsg.filename = `/home/ayaki/sonod/status/${place}/${timestamp.substr(0,7)}.csv`\nmsg.payload = [timestamp, sensor, battery, rssi];\nmsg.payload = msg.payload.join();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 480,
+        "wires": [
+            [
+                "533dc718ec8d77d2"
+            ]
+        ]
+    },
+    {
+        "id": "533dc718ec8d77d2",
+        "type": "file",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 760,
+        "y": 480,
+        "wires": [
+            [
+                "d12cfbc36c21459c"
+            ]
+        ]
+    },
+    {
+        "id": "d12cfbc36c21459c",
+        "type": "debug",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 990,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "0e79ce4e5359ddf9",
+        "type": "json",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 290,
+        "y": 480,
+        "wires": [
+            [
+                "7ce8aa013a756d9b",
+                "de0fc66bd3a7a5b4"
+            ]
+        ]
+    },
+    {
+        "id": "df0521346887aea0",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Battery",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 540,
+        "wires": [
+            [
+                "2b60ec87567e6e62"
+            ]
+        ]
+    },
+    {
+        "id": "2b60ec87567e6e62",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "35b084e00d42b1fa",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Battery",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "604800",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1340,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2189bdb6781bdd94",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "f5a14ffd55f6c590",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "RSSI",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-90",
+        "ymax": "0",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1330,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "71757771e7ac8188",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "RSSI",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 580,
+        "wires": [
+            [
+                "2189bdb6781bdd94"
+            ]
+        ]
+    },
+    {
+        "id": "56b1137669dc2ecd",
+        "type": "mqtt in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "topic": "error",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "b8bb310206b263d4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2d063b4e2037522f",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "4d2bfef4c51b6d91",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1000,
+        "wires": [
+            [
+                "031f580e724b1568"
+            ]
+        ]
+    },
+    {
+        "id": "031f580e724b1568",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1000,
+        "wires": [
+            [
+                "2d063b4e2037522f"
+            ]
+        ]
+    },
+    {
+        "id": "9463677d29422cd6",
+        "type": "comment",
+        "z": "6170f728d9918af4",
+        "name": "ステート監視",
+        "info": "",
+        "x": 350,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "a70cf3f0b9bc63ac",
+        "type": "mqtt in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "topic": "state",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "b8bb310206b263d4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 900,
+        "wires": [
+            [
+                "b6a1db5e2cfbddae"
+            ]
+        ]
+    },
+    {
+        "id": "537d83136e1c87dc",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "msg.filename = `/home/ayaki/sonod/state/${msg.payload.place}/${msg.payload.sensor}.txt`\nmsg.payload = msg.payload.pid;\nmsg.place = msg.payload.place;\nmsg.sensor = msg.payload.sensor;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 900,
+        "wires": [
+            [
+                "3da9031534735e80",
+                "4d8d7c6f555f85a7"
+            ]
+        ]
+    },
+    {
+        "id": "b6a1db5e2cfbddae",
+        "type": "json",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 270,
+        "y": 900,
+        "wires": [
+            [
+                "537d83136e1c87dc"
+            ]
+        ]
+    },
+    {
+        "id": "3da9031534735e80",
+        "type": "file",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 600,
+        "y": 900,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1b12bbba4b1c53c1",
+        "type": "inject",
+        "z": "6170f728d9918af4",
+        "name": "1秒ごとに更新",
+        "props": [
+            {
+                "p": "filename",
+                "v": "/home/ayaki/sonod/state/westlab",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 380,
+        "y": 1240,
+        "wires": [
+            [
+                "2256acd94434ea3d",
+                "32ef943b251f5000",
+                "7ab8fbac4b599c15",
+                "849c5a49084781a1",
+                "a78cad1b5641f162",
+                "6d526d6d90c029a7",
+                "c5ab0c7de0bbf087",
+                "3685263c94ab4876",
+                "2e1ea33c8d2bd8a2",
+                "61ad56a8421c135c"
+            ]
+        ]
+    },
+    {
+        "id": "2256acd94434ea3d",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"arashi\";\n\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1000,
+        "wires": [
+            [
+                "4d2bfef4c51b6d91"
+            ]
+        ]
+    },
+    {
+        "id": "c51e73f49c02b0e9",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "7e34779ef4c6a3e7",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1080,
+        "wires": [
+            [
+                "b064656448063832"
+            ]
+        ]
+    },
+    {
+        "id": "b064656448063832",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1080,
+        "wires": [
+            [
+                "c51e73f49c02b0e9"
+            ]
+        ]
+    },
+    {
+        "id": "32ef943b251f5000",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"1\";\n\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1080,
+        "wires": [
+            [
+                "7e34779ef4c6a3e7"
+            ]
+        ]
+    },
+    {
+        "id": "409b76434b0ad515",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "f450fa44a8efe58a",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1140,
+        "wires": [
+            [
+                "7452f4246043e161"
+            ]
+        ]
+    },
+    {
+        "id": "7452f4246043e161",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1140,
+        "wires": [
+            [
+                "409b76434b0ad515"
+            ]
+        ]
+    },
+    {
+        "id": "7ab8fbac4b599c15",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"2\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1140,
+        "wires": [
+            [
+                "f450fa44a8efe58a"
+            ]
+        ]
+    },
+    {
+        "id": "9d08f51d31cf2d23",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "02e212f008c7b139",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1200,
+        "wires": [
+            [
+                "e80edb480991559f"
+            ]
+        ]
+    },
+    {
+        "id": "e80edb480991559f",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1200,
+        "wires": [
+            [
+                "9d08f51d31cf2d23"
+            ]
+        ]
+    },
+    {
+        "id": "849c5a49084781a1",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"3\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1200,
+        "wires": [
+            [
+                "02e212f008c7b139"
+            ]
+        ]
+    },
+    {
+        "id": "326a077be000cda1",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "0f045134db8fcefd",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1260,
+        "wires": [
+            [
+                "458972e6a69c5e6e"
+            ]
+        ]
+    },
+    {
+        "id": "458972e6a69c5e6e",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1260,
+        "wires": [
+            [
+                "326a077be000cda1"
+            ]
+        ]
+    },
+    {
+        "id": "a78cad1b5641f162",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"4\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1260,
+        "wires": [
+            [
+                "0f045134db8fcefd"
+            ]
+        ]
+    },
+    {
+        "id": "cc7acd4d5f7c5cc5",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "37be0df972f0ac3f",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1320,
+        "wires": [
+            [
+                "215fb0178a435378"
+            ]
+        ]
+    },
+    {
+        "id": "215fb0178a435378",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1320,
+        "wires": [
+            [
+                "cc7acd4d5f7c5cc5"
+            ]
+        ]
+    },
+    {
+        "id": "6d526d6d90c029a7",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"6\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1320,
+        "wires": [
+            [
+                "37be0df972f0ac3f"
+            ]
+        ]
+    },
+    {
+        "id": "38d2dbee9357cb56",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "6171ee35f8eb3f13",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1380,
+        "wires": [
+            [
+                "06feb55f39618974"
+            ]
+        ]
+    },
+    {
+        "id": "06feb55f39618974",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1380,
+        "wires": [
+            [
+                "38d2dbee9357cb56"
+            ]
+        ]
+    },
+    {
+        "id": "c5ab0c7de0bbf087",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"7\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1380,
+        "wires": [
+            [
+                "6171ee35f8eb3f13"
+            ]
+        ]
+    },
+    {
+        "id": "24f296cd76e5e7d2",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1390,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "8101149fc9c2c9d9",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 1000,
+        "y": 1440,
+        "wires": [
+            [
+                "c5d84e6824873658"
+            ]
+        ]
+    },
+    {
+        "id": "c5d84e6824873658",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 1440,
+        "wires": [
+            [
+                "24f296cd76e5e7d2"
+            ]
+        ]
+    },
+    {
+        "id": "3685263c94ab4876",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"8\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1440,
+        "wires": [
+            [
+                "8101149fc9c2c9d9"
+            ]
+        ]
+    },
+    {
+        "id": "d2986ebacd7570e5",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1390,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "7854d2bb01c40ad6",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 1000,
+        "y": 1500,
+        "wires": [
+            [
+                "ca40369b8c42e600"
+            ]
+        ]
+    },
+    {
+        "id": "ca40369b8c42e600",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 1500,
+        "wires": [
+            [
+                "d2986ebacd7570e5"
+            ]
+        ]
+    },
+    {
+        "id": "2e1ea33c8d2bd8a2",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"9\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1500,
+        "wires": [
+            [
+                "7854d2bb01c40ad6"
+            ]
+        ]
+    },
+    {
+        "id": "782cead7c25d6a37",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1390,
+        "y": 1560,
+        "wires": []
+    },
+    {
+        "id": "67bc581a876a2b40",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 1000,
+        "y": 1560,
+        "wires": [
+            [
+                "c7ff4482eff43d74"
+            ]
+        ]
+    },
+    {
+        "id": "c7ff4482eff43d74",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 1560,
+        "wires": [
+            [
+                "782cead7c25d6a37"
+            ]
+        ]
+    },
+    {
+        "id": "61ad56a8421c135c",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"10\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1560,
+        "wires": [
+            [
+                "67bc581a876a2b40"
+            ]
+        ]
+    },
+    {
+        "id": "2b9df3c071642108",
+        "type": "comment",
+        "z": "6170f728d9918af4",
+        "name": "placeごとに作るのが良い",
+        "info": "",
+        "x": 390,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "bc3d276beb590387",
+        "type": "http request",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://notify-api.line.me/api/notify",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 950,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4d8d7c6f555f85a7",
+        "type": "switch",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 630,
+        "y": 840,
+        "wires": [
+            [
+                "06aa2c7a15d66560"
+            ]
+        ]
+    },
+    {
+        "id": "06aa2c7a15d66560",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "msg.headers = {\n    \"Authorization\": \"Bearer L1OArSqiwLgH4B5D6aOxRsHbAhv9Y2Opn5JW9Xg0UkD\"\n}\n\nmsg.payload = {\n    \"message\": `${msg.place}の${msg.sensor}のプログラムが停止しました`\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f3388b0f018aa699",
+        "type": "switch",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "property": "payload.place",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "westlab",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "orchid",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "noken",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 470,
+        "y": 140,
+        "wires": [
+            [
+                "d90d75bef0a4e60f",
+                "5d8ea3095cf44ad1"
+            ],
+            [
+                "2568dc308cd3b7ed",
+                "6e679e4babd54dc9"
+            ],
+            [
+                "fa90f75990b4c875",
+                "1060442002b16b63"
+            ]
+        ]
+    },
+    {
+        "id": "de0fc66bd3a7a5b4",
+        "type": "switch",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "property": "payload.place",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "westlab",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "orchid",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "noken",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 470,
+        "y": 540,
+        "wires": [
+            [
+                "71757771e7ac8188",
+                "df0521346887aea0"
+            ],
+            [
+                "19d6722eabf6a67f",
+                "5801fd8b679430d8"
+            ],
+            [
+                "d1278cc25c86a71a",
+                "8875898292e3080f"
+            ]
+        ]
+    },
+    {
+        "id": "2568dc308cd3b7ed",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Temperature",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 240,
+        "wires": [
+            [
+                "fad5aa432a6b7d1e"
+            ]
+        ]
+    },
+    {
+        "id": "fad5aa432a6b7d1e",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "6e3b318d09c8ce97",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Temperature",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "10",
+        "ymax": "30",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1270,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6e679e4babd54dc9",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Humidity",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 280,
+        "wires": [
+            [
+                "0b441ef03b40ebe9"
+            ]
+        ]
+    },
+    {
+        "id": "0b441ef03b40ebe9",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "1c9efcc07064f7a4",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Humidity",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1260,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fa90f75990b4c875",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Temperature",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 340,
+        "wires": [
+            [
+                "0a37cc567810503a"
+            ]
+        ]
+    },
+    {
+        "id": "0a37cc567810503a",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "e39b52c12d8c656d",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "Temperature",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "10",
+        "ymax": "30",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1270,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1060442002b16b63",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Humidity",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 380,
+        "wires": [
+            [
+                "1d6e65523a33b851"
+            ]
+        ]
+    },
+    {
+        "id": "1d6e65523a33b851",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "b16bb9b17958cbbc",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "Humidity",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1260,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "19d6722eabf6a67f",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Battery",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 620,
+        "wires": [
+            [
+                "20acefabc5ca09af"
+            ]
+        ]
+    },
+    {
+        "id": "20acefabc5ca09af",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "6e3b318d09c8ce97",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Battery",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "604800",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1340,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fd9f53bdc2480006",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "1c9efcc07064f7a4",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "RSSI",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-90",
+        "ymax": "0",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1330,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5801fd8b679430d8",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "RSSI",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 660,
+        "wires": [
+            [
+                "fd9f53bdc2480006"
+            ]
+        ]
+    },
+    {
+        "id": "d1278cc25c86a71a",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Battery",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 720,
+        "wires": [
+            [
+                "9048eb0ccf68e6b0"
+            ]
+        ]
+    },
+    {
+        "id": "9048eb0ccf68e6b0",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "e39b52c12d8c656d",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Battery",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "604800",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1340,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "90c4067f8786aa66",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "b16bb9b17958cbbc",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "RSSI",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-90",
+        "ymax": "0",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1330,
+        "y": 760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8875898292e3080f",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "RSSI",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 760,
+        "wires": [
+            [
+                "90c4067f8786aa66"
+            ]
+        ]
+    },
+    {
+        "id": "b8bb310206b263d4",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "35b084e00d42b1fa",
+        "type": "ui_group",
+        "name": "名前",
+        "tab": "f8ca21573b0c08cf",
+        "order": 1,
+        "disp": false,
+        "width": "17",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f5a14ffd55f6c590",
+        "type": "ui_group",
+        "name": "Group 2",
+        "tab": "f8ca21573b0c08cf",
+        "order": 2,
+        "disp": false,
+        "width": "17",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "198b46051ef9f5b8",
+        "type": "ui_group",
+        "name": "westlab",
+        "tab": "a5c9d8af6c91220c",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "6e3b318d09c8ce97",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "1eb7f8cddf96534d",
+        "order": 1,
+        "disp": true,
+        "width": 17,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "1c9efcc07064f7a4",
+        "type": "ui_group",
+        "name": "Group 2",
+        "tab": "1eb7f8cddf96534d",
+        "order": 2,
+        "disp": true,
+        "width": 17
+    },
+    {
+        "id": "e39b52c12d8c656d",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "8e1805d924de713b",
+        "order": 1,
+        "disp": true,
+        "width": 17
+    },
+    {
+        "id": "b16bb9b17958cbbc",
+        "type": "ui_group",
+        "name": "Group 2",
+        "tab": "8e1805d924de713b",
+        "order": 2,
+        "disp": true,
+        "width": 17
+    },
+    {
+        "id": "f8ca21573b0c08cf",
+        "type": "ui_tab",
+        "name": "westlab",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "a5c9d8af6c91220c",
+        "type": "ui_tab",
+        "name": "監視",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "1eb7f8cddf96534d",
+        "type": "ui_tab",
+        "name": "orchid",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "8e1805d924de713b",
+        "type": "ui_tab",
+        "name": "noken",
+        "icon": "dashboard",
+        "order": 4,
+        "disabled": false,
+        "hidden": false
+    }
+]
