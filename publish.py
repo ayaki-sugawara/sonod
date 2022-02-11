@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 
 class Pub():
-  def __init__(self, ip_addr="localhost", port=1883):
+  def __init__(self, ip_addr="10.24.69.100", port=1883):
     self.client = mqtt.Client()
     self.client.on_connect = self.on_connect
     self.client.on_disconnect = self.on_disconnect
