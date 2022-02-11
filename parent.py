@@ -121,7 +121,7 @@ class Sensor():
     self.mqtt = mqtt
     sendDate = {
       "sensor": name,
-      "pid": str(os.getpid())
+      "pid": str(os.getpid()),
       "place": place
     }
     self.mqtt.publish("state", json.dumps(sendDate))

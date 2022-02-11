@@ -2,6 +2,7 @@ import signal
 import sys
 from parent import Sensor, generateMacAddr
 from publish import Pub
+import json
 
 def sig_handler(signum, frame) -> None:
   sys.exit(1)
@@ -12,11 +13,11 @@ def errorDetected(name, mqtt, place):
     "pid": 0,
     "place": place
   }
-  mqtt.publish("state", jsondumps(sendData))
+  mqtt.publish("state", json.dumps(sendData))
   #with open("state/{}.txt".format(name), mode="w") as f:
     #f.write("0") 
 
-def main(sensor, plance=None, name=None, mode="init", interval=60):
+def main(sensor, place=None, name=None, mode="init", interval=60):
   mqtt = Pub()
   if place == None:
     print("Please fill place name")
