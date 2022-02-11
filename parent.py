@@ -30,11 +30,12 @@ def detectNACK(AckOrNack:int):
     print("====Some command was not acceptted correctly====")
 
 class NtfyDelegate(btle.DefaultDelegate):
-  def __init__(self, params, name, pub):
+  def __init__(self, params, name, mqtt, place):
     btle.DefaultDelegate.__init__(self)
     self.idx = -1 #we use this value for checking data was received correctly;
-    self.mqtt = pub
+    self.mqtt = mqtt
     self.name = name
+    self.place = place
 
   def handleNotification(self, cHandle, data):
     cal = binascii.b2a_hex(data)
@@ -51,7 +52,8 @@ class NtfyDelegate(btle.DefaultDelegate):
       sendData = {
         "battery": battery, 
         "rssi": rssi,
-        "sensor": self.name
+        "sensor": self.name,
+        "place": self.place
       }
       self.mqtt.publish("status", json.dumps(sendData))
       detectNACK(ack)
@@ -94,7 +96,8 @@ class NtfyDelegate(btle.DefaultDelegate):
       sendData = {
         "data": data,
         "sensor": self.name,
-        "timestamp": timestamp
+        "timestamp": timestamp,
+        "place": self.place
       }
 
       self.mqtt.publish("data", json.dumps(sendData))
@@ -106,19 +109,20 @@ class AlpsSensor(Peripheral):
     self.result = 1
 
 class Sensor():
-  def __init__(self, addr, name=None, pub=None):
+  def __init__(self, addr, name=None, mqtt=None, place=None):
     self.alps= AlpsSensor(addr)
     self.addr = addr
     if name == None:
       name = addr
-    self.alps.setDelegate(NtfyDelegate(btle.DefaultDelegate, name, pub))
+    self.alps.setDelegate(NtfyDelegate(btle.DefaultDelegate, name, mqtt, place))
     self.sendCommand(1, [0x01, 0x00])#custom1 enable
     self.sendCommand(2, [0x01, 0x00])#custom2 enable
     self.count = 0 # we can use this for some purpose like fixing time automatically
-    self.mqtt = pub
+    self.mqtt = mqtt
     sendDate = {
       "sensor": name,
-      "pid": str(os.getpid())
+      "pid": str(os.getpid()),
+      "place": place
     }
     self.mqtt.publish("state", json.dumps(sendDate))
     #with open('state/{}.txt'.format(name), mode='w') as f:

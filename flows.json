@@ -57,8 +57,7 @@
         "wires": [
             [
                 "497fa704e6e1c733",
-                "5d8ea3095cf44ad1",
-                "d90d75bef0a4e60f"
+                "f3388b0f018aa699"
             ]
         ]
     },
@@ -67,7 +66,7 @@
         "type": "function",
         "z": "6170f728d9918af4",
         "name": "ファイル書き込み前準備",
-        "func": "let data = msg.payload.data;\nlet timestamp = msg.payload.timestamp;\nlet sensor = msg.payload.sensor;\nmsg.filename = `/home/ayaki/sonod/data/${timestamp.substr(0,7)}.csv`\nmsg.payload = [timestamp, sensor];\nfor (var key in data){\n    msg.payload.push(data[key])\n}\nmsg.payload = msg.payload.join();\nreturn msg;",
+        "func": "let data = msg.payload.data;\nlet timestamp = msg.payload.timestamp;\nlet sensor = msg.payload.sensor;\nlet place = msg.payload.place;\nmsg.filename = `/home/ayaki/sonod/data/${place}/${timestamp.substr(0,7)}.csv`\nmsg.payload = [timestamp, sensor];\nfor (var key in data){\n    msg.payload.push(data[key])\n}\nmsg.payload = msg.payload.join();\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -110,8 +109,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 490,
-        "y": 160,
+        "x": 890,
+        "y": 140,
         "wires": [
             [
                 "bb681a6f0db41af7"
@@ -156,8 +155,8 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 730,
-        "y": 160,
+        "x": 1250,
+        "y": 140,
         "wires": [
             []
         ]
@@ -173,8 +172,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 480,
-        "y": 220,
+        "x": 900,
+        "y": 180,
         "wires": [
             [
                 "c3d19ba532ec3f47"
@@ -219,59 +218,10 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 720,
-        "y": 220,
+        "x": 1240,
+        "y": 180,
         "wires": [
             []
-        ]
-    },
-    {
-        "id": "47089aa98180c9f2",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "initialize",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "[]",
-        "payloadType": "str",
-        "x": 410,
-        "y": 320,
-        "wires": [
-            [
-                "29855da8f120651e"
-            ]
-        ]
-    },
-    {
-        "id": "29855da8f120651e",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "msg.payload = [];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 560,
-        "y": 320,
-        "wires": [
-            [
-                "bb681a6f0db41af7",
-                "c3d19ba532ec3f47"
-            ]
         ]
     },
     {
@@ -288,7 +238,7 @@
         "rh": 0,
         "inputs": 0,
         "x": 150,
-        "y": 400,
+        "y": 480,
         "wires": [
             [
                 "0e79ce4e5359ddf9"
@@ -300,14 +250,14 @@
         "type": "function",
         "z": "6170f728d9918af4",
         "name": "ファイル書き込み前準備",
-        "func": "// ローカル現在時刻の取得\nconst nowLocal = new Date()    // Wed Apr 22 2020 22:39:03 GMT+0900 (Japan Standard Time)\n\n// UTCとローカルタイムゾーンとの差を取得し、分からミリ秒に変換\nconst diff = nowLocal.getTimezoneOffset() * 60 * 1000    // -540 * 60 * 1000 = -32400000\n\n// toISOString()で、UTC時間になってしまう（-9時間）ので、日本時間に9時間足しておく\nconst plusLocal = new Date(nowLocal - diff)    // Thu Apr 23 2020 07:39:03 GMT+0900 (Japan Standard Time)\n\n// ISO形式に変換（UTCタイムゾーンで日本時間、というよくない状態）\nlet iso = plusLocal.toISOString()   // \"2020-04-22T22:39:03.397Z\"\n\n// UTCタイムゾーン部分は消して、日本のタイムゾーンの表記を足す\niso = iso.slice(0, 19) + '+09:00'    // \"2020-04-22T22:39:03+09:00\"\n\nlet timestamp = iso;\nlet sensor = msg.payload.sensor;\nlet battery = msg.payload.battery;\nlet rssi = msg.payload.rssi;\nmsg.filename = `/home/ayaki/sonod/status/${timestamp.substr(0,7)}.csv`\nmsg.payload = [timestamp, sensor, battery, rssi];\nmsg.payload = msg.payload.join();\nreturn msg;",
+        "func": "// ローカル現在時刻の取得\nconst nowLocal = new Date()    // Wed Apr 22 2020 22:39:03 GMT+0900 (Japan Standard Time)\n\n// UTCとローカルタイムゾーンとの差を取得し、分からミリ秒に変換\nconst diff = nowLocal.getTimezoneOffset() * 60 * 1000    // -540 * 60 * 1000 = -32400000\n\n// toISOString()で、UTC時間になってしまう（-9時間）ので、日本時間に9時間足しておく\nconst plusLocal = new Date(nowLocal - diff)    // Thu Apr 23 2020 07:39:03 GMT+0900 (Japan Standard Time)\n\n// ISO形式に変換（UTCタイムゾーンで日本時間、というよくない状態）\nlet iso = plusLocal.toISOString()   // \"2020-04-22T22:39:03.397Z\"\n\n// UTCタイムゾーン部分は消して、日本のタイムゾーンの表記を足す\niso = iso.slice(0, 19) + '+09:00'    // \"2020-04-22T22:39:03+09:00\"\n\nlet timestamp = iso;\nlet sensor = msg.payload.sensor;\nlet battery = msg.payload.battery;\nlet rssi = msg.payload.rssi;\nlet place = msg.payload.place;\nmsg.filename = `/home/ayaki/sonod/status/${place}/${timestamp.substr(0,7)}.csv`\nmsg.payload = [timestamp, sensor, battery, rssi];\nmsg.payload = msg.payload.join();\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 510,
-        "y": 400,
+        "y": 480,
         "wires": [
             [
                 "533dc718ec8d77d2"
@@ -325,7 +275,7 @@
         "overwriteFile": "false",
         "encoding": "none",
         "x": 760,
-        "y": 400,
+        "y": 480,
         "wires": [
             [
                 "d12cfbc36c21459c"
@@ -345,7 +295,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 990,
-        "y": 400,
+        "y": 480,
         "wires": []
     },
     {
@@ -357,12 +307,11 @@
         "action": "",
         "pretty": false,
         "x": 290,
-        "y": 400,
+        "y": 480,
         "wires": [
             [
                 "7ce8aa013a756d9b",
-                "df0521346887aea0",
-                "71757771e7ac8188"
+                "de0fc66bd3a7a5b4"
             ]
         ]
     },
@@ -377,8 +326,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 460,
-        "y": 440,
+        "x": 980,
+        "y": 540,
         "wires": [
             [
                 "2b60ec87567e6e62"
@@ -391,7 +340,7 @@
         "z": "6170f728d9918af4",
         "name": "",
         "group": "35b084e00d42b1fa",
-        "order": 2,
+        "order": 4,
         "width": 0,
         "height": 0,
         "label": "Battery",
@@ -423,8 +372,8 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 660,
-        "y": 440,
+        "x": 1340,
+        "y": 540,
         "wires": [
             []
         ]
@@ -435,7 +384,7 @@
         "z": "6170f728d9918af4",
         "name": "",
         "group": "f5a14ffd55f6c590",
-        "order": 2,
+        "order": 4,
         "width": 0,
         "height": 0,
         "label": "RSSI",
@@ -467,59 +416,10 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 650,
-        "y": 480,
+        "x": 1330,
+        "y": 580,
         "wires": [
             []
-        ]
-    },
-    {
-        "id": "14fbc71ded315657",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "initialize",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "[]",
-        "payloadType": "str",
-        "x": 330,
-        "y": 540,
-        "wires": [
-            [
-                "dec3df69124a8283"
-            ]
-        ]
-    },
-    {
-        "id": "dec3df69124a8283",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "msg.payload = [];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 460,
-        "y": 540,
-        "wires": [
-            [
-                "2b60ec87567e6e62",
-                "2189bdb6781bdd94"
-            ]
         ]
     },
     {
@@ -533,8 +433,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 450,
-        "y": 480,
+        "x": 970,
+        "y": 580,
         "wires": [
             [
                 "2189bdb6781bdd94"
@@ -555,7 +455,7 @@
         "rh": 0,
         "inputs": 0,
         "x": 150,
-        "y": 680,
+        "y": 780,
         "wires": [
             []
         ]
@@ -573,39 +473,9 @@
         "format": "{{msg.payload}}",
         "layout": "row-spread",
         "className": "",
-        "x": 930,
-        "y": 1040,
+        "x": 1370,
+        "y": 1000,
         "wires": []
-    },
-    {
-        "id": "d90fe60f398be66c",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "arashi",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/arashi.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 170,
-        "y": 1040,
-        "wires": [
-            [
-                "4d2bfef4c51b6d91"
-            ]
-        ]
     },
     {
         "id": "4d2bfef4c51b6d91",
@@ -618,8 +488,8 @@
         "sendError": false,
         "encoding": "none",
         "allProps": false,
-        "x": 400,
-        "y": 1040,
+        "x": 980,
+        "y": 1000,
         "wires": [
             [
                 "031f580e724b1568"
@@ -637,8 +507,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 680,
-        "y": 1040,
+        "x": 1200,
+        "y": 1000,
         "wires": [
             [
                 "2d063b4e2037522f"
@@ -651,944 +521,9 @@
         "z": "6170f728d9918af4",
         "name": "ステート監視",
         "info": "",
-        "x": 150,
-        "y": 1000,
+        "x": 350,
+        "y": 1100,
         "wires": []
-    },
-    {
-        "id": "aae6f2f7b5715f49",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 910,
-        "y": 1120,
-        "wires": []
-    },
-    {
-        "id": "4aeb4a070e0f9e1b",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 660,
-        "y": 1120,
-        "wires": [
-            [
-                "aae6f2f7b5715f49"
-            ]
-        ]
-    },
-    {
-        "id": "5206d08ae7155341",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 380,
-        "y": 1120,
-        "wires": [
-            [
-                "4aeb4a070e0f9e1b"
-            ]
-        ]
-    },
-    {
-        "id": "8f802ee9194fd4ce",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "1",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/1.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 150,
-        "y": 1120,
-        "wires": [
-            [
-                "5206d08ae7155341"
-            ]
-        ]
-    },
-    {
-        "id": "de58651d516b6f33",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 930,
-        "y": 1200,
-        "wires": []
-    },
-    {
-        "id": "a80be1c39fbeb8c9",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 680,
-        "y": 1200,
-        "wires": [
-            [
-                "de58651d516b6f33"
-            ]
-        ]
-    },
-    {
-        "id": "abfcf13baff08789",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 400,
-        "y": 1200,
-        "wires": [
-            [
-                "a80be1c39fbeb8c9"
-            ]
-        ]
-    },
-    {
-        "id": "780da210e7273649",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "2",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/2.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 170,
-        "y": 1200,
-        "wires": [
-            [
-                "abfcf13baff08789"
-            ]
-        ]
-    },
-    {
-        "id": "4064b64dfe44c898",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 910,
-        "y": 1260,
-        "wires": []
-    },
-    {
-        "id": "24b75570e2bf05af",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 660,
-        "y": 1260,
-        "wires": [
-            [
-                "4064b64dfe44c898"
-            ]
-        ]
-    },
-    {
-        "id": "31c7253118670be5",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 380,
-        "y": 1260,
-        "wires": [
-            [
-                "24b75570e2bf05af"
-            ]
-        ]
-    },
-    {
-        "id": "09714575cf283dce",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "3",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/3.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 150,
-        "y": 1260,
-        "wires": [
-            [
-                "31c7253118670be5"
-            ]
-        ]
-    },
-    {
-        "id": "26f97e3f379e78fd",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 890,
-        "y": 1340,
-        "wires": []
-    },
-    {
-        "id": "5685120276e83c49",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 640,
-        "y": 1340,
-        "wires": [
-            [
-                "26f97e3f379e78fd"
-            ]
-        ]
-    },
-    {
-        "id": "392d0da9ba582182",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 360,
-        "y": 1340,
-        "wires": [
-            [
-                "5685120276e83c49"
-            ]
-        ]
-    },
-    {
-        "id": "abcfa71bfa23121f",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "4",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/4.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 130,
-        "y": 1340,
-        "wires": [
-            [
-                "392d0da9ba582182"
-            ]
-        ]
-    },
-    {
-        "id": "2ebabfc7da89a1ea",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 890,
-        "y": 1400,
-        "wires": []
-    },
-    {
-        "id": "d9aa373c3b01d677",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 640,
-        "y": 1400,
-        "wires": [
-            [
-                "2ebabfc7da89a1ea"
-            ]
-        ]
-    },
-    {
-        "id": "1684acd7e4d65fcd",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 360,
-        "y": 1400,
-        "wires": [
-            [
-                "d9aa373c3b01d677"
-            ]
-        ]
-    },
-    {
-        "id": "e81b86a30d323668",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "5",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/5.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 130,
-        "y": 1400,
-        "wires": [
-            [
-                "1684acd7e4d65fcd"
-            ]
-        ]
-    },
-    {
-        "id": "343854126856d413",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 870,
-        "y": 1480,
-        "wires": []
-    },
-    {
-        "id": "016cf0a55a2941ed",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 620,
-        "y": 1480,
-        "wires": [
-            [
-                "343854126856d413"
-            ]
-        ]
-    },
-    {
-        "id": "58db810fafe990fb",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 340,
-        "y": 1480,
-        "wires": [
-            [
-                "016cf0a55a2941ed"
-            ]
-        ]
-    },
-    {
-        "id": "ae30c09f66ea1de5",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "6",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/6.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 110,
-        "y": 1480,
-        "wires": [
-            [
-                "58db810fafe990fb"
-            ]
-        ]
-    },
-    {
-        "id": "247b524712f6bda5",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 870,
-        "y": 1540,
-        "wires": []
-    },
-    {
-        "id": "14bf4bc9775c5537",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 620,
-        "y": 1540,
-        "wires": [
-            [
-                "247b524712f6bda5"
-            ]
-        ]
-    },
-    {
-        "id": "65f547d6a3b2b7ed",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 340,
-        "y": 1540,
-        "wires": [
-            [
-                "14bf4bc9775c5537"
-            ]
-        ]
-    },
-    {
-        "id": "0cdf8e3490372873",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "7",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/7.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 110,
-        "y": 1540,
-        "wires": [
-            [
-                "65f547d6a3b2b7ed"
-            ]
-        ]
-    },
-    {
-        "id": "3d89e5d29270bf21",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 870,
-        "y": 1600,
-        "wires": []
-    },
-    {
-        "id": "fecf66252f6e335f",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 620,
-        "y": 1600,
-        "wires": [
-            [
-                "3d89e5d29270bf21"
-            ]
-        ]
-    },
-    {
-        "id": "941751b051d4736c",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 340,
-        "y": 1600,
-        "wires": [
-            [
-                "fecf66252f6e335f"
-            ]
-        ]
-    },
-    {
-        "id": "4c36b7d91b12f952",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "8",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/8.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 110,
-        "y": 1600,
-        "wires": [
-            [
-                "941751b051d4736c"
-            ]
-        ]
-    },
-    {
-        "id": "3d01b5d26ea4aaf6",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 870,
-        "y": 1660,
-        "wires": []
-    },
-    {
-        "id": "b9672557303801d2",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 620,
-        "y": 1660,
-        "wires": [
-            [
-                "3d01b5d26ea4aaf6"
-            ]
-        ]
-    },
-    {
-        "id": "7c1bd74ceed0d03f",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 340,
-        "y": 1660,
-        "wires": [
-            [
-                "b9672557303801d2"
-            ]
-        ]
-    },
-    {
-        "id": "f34e975fcc35d61c",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "9",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/9.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 110,
-        "y": 1660,
-        "wires": [
-            [
-                "7c1bd74ceed0d03f"
-            ]
-        ]
-    },
-    {
-        "id": "efa3dd67e9842f64",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 890,
-        "y": 1720,
-        "wires": []
-    },
-    {
-        "id": "ca9014f41520a594",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 640,
-        "y": 1720,
-        "wires": [
-            [
-                "efa3dd67e9842f64"
-            ]
-        ]
-    },
-    {
-        "id": "b7070432aa1c25a6",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 360,
-        "y": 1720,
-        "wires": [
-            [
-                "ca9014f41520a594"
-            ]
-        ]
-    },
-    {
-        "id": "3b42aced7ebe8712",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "10",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/10.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 130,
-        "y": 1720,
-        "wires": [
-            [
-                "b7070432aa1c25a6"
-            ]
-        ]
-    },
-    {
-        "id": "a5f0d3b42ef279f6",
-        "type": "ui_text",
-        "z": "6170f728d9918af4",
-        "group": "198b46051ef9f5b8",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "{{msg.topic}}",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "x": 890,
-        "y": 1780,
-        "wires": []
-    },
-    {
-        "id": "d07cc9a32e50d344",
-        "type": "function",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 640,
-        "y": 1780,
-        "wires": [
-            [
-                "a5f0d3b42ef279f6"
-            ]
-        ]
-    },
-    {
-        "id": "f5d88e836a18cc5a",
-        "type": "file in",
-        "z": "6170f728d9918af4",
-        "name": "",
-        "filename": "",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 360,
-        "y": 1780,
-        "wires": [
-            [
-                "d07cc9a32e50d344"
-            ]
-        ]
-    },
-    {
-        "id": "33b8fbec235891a7",
-        "type": "inject",
-        "z": "6170f728d9918af4",
-        "name": "11",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "filename",
-                "v": "/home/ayaki/sonod/state/11.txt",
-                "vt": "str"
-            }
-        ],
-        "repeat": "1",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 130,
-        "y": 1780,
-        "wires": [
-            [
-                "f5d88e836a18cc5a"
-            ]
-        ]
     },
     {
         "id": "a70cf3f0b9bc63ac",
@@ -1604,7 +539,7 @@
         "rh": 0,
         "inputs": 0,
         "x": 130,
-        "y": 800,
+        "y": 900,
         "wires": [
             [
                 "b6a1db5e2cfbddae"
@@ -1616,17 +551,18 @@
         "type": "function",
         "z": "6170f728d9918af4",
         "name": "",
-        "func": "msg.filename = `/home/ayaki/sonod/state/${msg.payload.sensor}.txt`\nmsg.payload = msg.payload.pid;\nreturn msg;",
+        "func": "msg.filename = `/home/ayaki/sonod/state/${msg.payload.place}/${msg.payload.sensor}.txt`\nmsg.payload = msg.payload.pid;\nmsg.place = msg.payload.place;\nmsg.sensor = msg.payload.sensor;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 420,
-        "y": 800,
+        "y": 900,
         "wires": [
             [
-                "3da9031534735e80"
+                "3da9031534735e80",
+                "4d8d7c6f555f85a7"
             ]
         ]
     },
@@ -1639,7 +575,7 @@
         "action": "",
         "pretty": false,
         "x": 270,
-        "y": 800,
+        "y": 900,
         "wires": [
             [
                 "537d83136e1c87dc"
@@ -1657,9 +593,1392 @@
         "overwriteFile": "true",
         "encoding": "none",
         "x": 600,
-        "y": 800,
+        "y": 900,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "1b12bbba4b1c53c1",
+        "type": "inject",
+        "z": "6170f728d9918af4",
+        "name": "1秒ごとに更新",
+        "props": [
+            {
+                "p": "filename",
+                "v": "/home/ayaki/sonod/state/westlab",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 380,
+        "y": 1240,
+        "wires": [
+            [
+                "2256acd94434ea3d",
+                "32ef943b251f5000",
+                "7ab8fbac4b599c15",
+                "849c5a49084781a1",
+                "a78cad1b5641f162",
+                "6d526d6d90c029a7",
+                "c5ab0c7de0bbf087",
+                "3685263c94ab4876",
+                "2e1ea33c8d2bd8a2",
+                "61ad56a8421c135c"
+            ]
+        ]
+    },
+    {
+        "id": "2256acd94434ea3d",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"arashi\";\n\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1000,
+        "wires": [
+            [
+                "4d2bfef4c51b6d91"
+            ]
+        ]
+    },
+    {
+        "id": "c51e73f49c02b0e9",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "7e34779ef4c6a3e7",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1080,
+        "wires": [
+            [
+                "b064656448063832"
+            ]
+        ]
+    },
+    {
+        "id": "b064656448063832",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1080,
+        "wires": [
+            [
+                "c51e73f49c02b0e9"
+            ]
+        ]
+    },
+    {
+        "id": "32ef943b251f5000",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"1\";\n\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1080,
+        "wires": [
+            [
+                "7e34779ef4c6a3e7"
+            ]
+        ]
+    },
+    {
+        "id": "409b76434b0ad515",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "f450fa44a8efe58a",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1140,
+        "wires": [
+            [
+                "7452f4246043e161"
+            ]
+        ]
+    },
+    {
+        "id": "7452f4246043e161",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1140,
+        "wires": [
+            [
+                "409b76434b0ad515"
+            ]
+        ]
+    },
+    {
+        "id": "7ab8fbac4b599c15",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"2\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1140,
+        "wires": [
+            [
+                "f450fa44a8efe58a"
+            ]
+        ]
+    },
+    {
+        "id": "9d08f51d31cf2d23",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "02e212f008c7b139",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1200,
+        "wires": [
+            [
+                "e80edb480991559f"
+            ]
+        ]
+    },
+    {
+        "id": "e80edb480991559f",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1200,
+        "wires": [
+            [
+                "9d08f51d31cf2d23"
+            ]
+        ]
+    },
+    {
+        "id": "849c5a49084781a1",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"3\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1200,
+        "wires": [
+            [
+                "02e212f008c7b139"
+            ]
+        ]
+    },
+    {
+        "id": "326a077be000cda1",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "0f045134db8fcefd",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1260,
+        "wires": [
+            [
+                "458972e6a69c5e6e"
+            ]
+        ]
+    },
+    {
+        "id": "458972e6a69c5e6e",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1260,
+        "wires": [
+            [
+                "326a077be000cda1"
+            ]
+        ]
+    },
+    {
+        "id": "a78cad1b5641f162",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"4\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1260,
+        "wires": [
+            [
+                "0f045134db8fcefd"
+            ]
+        ]
+    },
+    {
+        "id": "cc7acd4d5f7c5cc5",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "37be0df972f0ac3f",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1320,
+        "wires": [
+            [
+                "215fb0178a435378"
+            ]
+        ]
+    },
+    {
+        "id": "215fb0178a435378",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1320,
+        "wires": [
+            [
+                "cc7acd4d5f7c5cc5"
+            ]
+        ]
+    },
+    {
+        "id": "6d526d6d90c029a7",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"6\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1320,
+        "wires": [
+            [
+                "37be0df972f0ac3f"
+            ]
+        ]
+    },
+    {
+        "id": "38d2dbee9357cb56",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "6171ee35f8eb3f13",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 980,
+        "y": 1380,
+        "wires": [
+            [
+                "06feb55f39618974"
+            ]
+        ]
+    },
+    {
+        "id": "06feb55f39618974",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 1380,
+        "wires": [
+            [
+                "38d2dbee9357cb56"
+            ]
+        ]
+    },
+    {
+        "id": "c5ab0c7de0bbf087",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"7\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 1380,
+        "wires": [
+            [
+                "6171ee35f8eb3f13"
+            ]
+        ]
+    },
+    {
+        "id": "24f296cd76e5e7d2",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1390,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "8101149fc9c2c9d9",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 1000,
+        "y": 1440,
+        "wires": [
+            [
+                "c5d84e6824873658"
+            ]
+        ]
+    },
+    {
+        "id": "c5d84e6824873658",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 1440,
+        "wires": [
+            [
+                "24f296cd76e5e7d2"
+            ]
+        ]
+    },
+    {
+        "id": "3685263c94ab4876",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"8\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1440,
+        "wires": [
+            [
+                "8101149fc9c2c9d9"
+            ]
+        ]
+    },
+    {
+        "id": "d2986ebacd7570e5",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1390,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "7854d2bb01c40ad6",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 1000,
+        "y": 1500,
+        "wires": [
+            [
+                "ca40369b8c42e600"
+            ]
+        ]
+    },
+    {
+        "id": "ca40369b8c42e600",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 1500,
+        "wires": [
+            [
+                "d2986ebacd7570e5"
+            ]
+        ]
+    },
+    {
+        "id": "2e1ea33c8d2bd8a2",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"9\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1500,
+        "wires": [
+            [
+                "7854d2bb01c40ad6"
+            ]
+        ]
+    },
+    {
+        "id": "782cead7c25d6a37",
+        "type": "ui_text",
+        "z": "6170f728d9918af4",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1390,
+        "y": 1560,
+        "wires": []
+    },
+    {
+        "id": "67bc581a876a2b40",
+        "type": "file in",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 1000,
+        "y": 1560,
+        "wires": [
+            [
+                "c7ff4482eff43d74"
+            ]
+        ]
+    },
+    {
+        "id": "c7ff4482eff43d74",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 1560,
+        "wires": [
+            [
+                "782cead7c25d6a37"
+            ]
+        ]
+    },
+    {
+        "id": "61ad56a8421c135c",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "\nlet sensor_name = \"10\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 1560,
+        "wires": [
+            [
+                "67bc581a876a2b40"
+            ]
+        ]
+    },
+    {
+        "id": "2b9df3c071642108",
+        "type": "comment",
+        "z": "6170f728d9918af4",
+        "name": "placeごとに作るのが良い",
+        "info": "",
+        "x": 390,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "bc3d276beb590387",
+        "type": "http request",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://notify-api.line.me/api/notify",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 950,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4d8d7c6f555f85a7",
+        "type": "switch",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 630,
+        "y": 840,
+        "wires": [
+            [
+                "06aa2c7a15d66560"
+            ]
+        ]
+    },
+    {
+        "id": "06aa2c7a15d66560",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "func": "msg.headers = {\n    \"Authorization\": \"Bearer L1OArSqiwLgH4B5D6aOxRsHbAhv9Y2Opn5JW9Xg0UkD\"\n}\n\nmsg.payload = {\n    \"message\": `${msg.place}の${msg.sensor}のプログラムが停止しました`\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f3388b0f018aa699",
+        "type": "switch",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "property": "payload.place",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "westlab",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "orchid",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "noken",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 470,
+        "y": 140,
+        "wires": [
+            [
+                "d90d75bef0a4e60f",
+                "5d8ea3095cf44ad1"
+            ],
+            [
+                "2568dc308cd3b7ed",
+                "6e679e4babd54dc9"
+            ],
+            [
+                "fa90f75990b4c875",
+                "1060442002b16b63"
+            ]
+        ]
+    },
+    {
+        "id": "de0fc66bd3a7a5b4",
+        "type": "switch",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "property": "payload.place",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "westlab",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "orchid",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "noken",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 470,
+        "y": 540,
+        "wires": [
+            [
+                "71757771e7ac8188",
+                "df0521346887aea0"
+            ],
+            [
+                "19d6722eabf6a67f",
+                "5801fd8b679430d8"
+            ],
+            [
+                "d1278cc25c86a71a",
+                "8875898292e3080f"
+            ]
+        ]
+    },
+    {
+        "id": "2568dc308cd3b7ed",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Temperature",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 240,
+        "wires": [
+            [
+                "fad5aa432a6b7d1e"
+            ]
+        ]
+    },
+    {
+        "id": "fad5aa432a6b7d1e",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "6e3b318d09c8ce97",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Temperature",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "10",
+        "ymax": "30",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1270,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6e679e4babd54dc9",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Humidity",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 280,
+        "wires": [
+            [
+                "0b441ef03b40ebe9"
+            ]
+        ]
+    },
+    {
+        "id": "0b441ef03b40ebe9",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "1c9efcc07064f7a4",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Humidity",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1260,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fa90f75990b4c875",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Temperature",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 910,
+        "y": 340,
+        "wires": [
+            [
+                "0a37cc567810503a"
+            ]
+        ]
+    },
+    {
+        "id": "0a37cc567810503a",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "e39b52c12d8c656d",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "Temperature",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "10",
+        "ymax": "30",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1270,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1060442002b16b63",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Humidity",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 380,
+        "wires": [
+            [
+                "1d6e65523a33b851"
+            ]
+        ]
+    },
+    {
+        "id": "1d6e65523a33b851",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "b16bb9b17958cbbc",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "Humidity",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1260,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "19d6722eabf6a67f",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Battery",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 620,
+        "wires": [
+            [
+                "20acefabc5ca09af"
+            ]
+        ]
+    },
+    {
+        "id": "20acefabc5ca09af",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "6e3b318d09c8ce97",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Battery",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "604800",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1340,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fd9f53bdc2480006",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "1c9efcc07064f7a4",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "RSSI",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-90",
+        "ymax": "0",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1330,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5801fd8b679430d8",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "RSSI",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 660,
+        "wires": [
+            [
+                "fd9f53bdc2480006"
+            ]
+        ]
+    },
+    {
+        "id": "d1278cc25c86a71a",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "Battery",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 720,
+        "wires": [
+            [
+                "9048eb0ccf68e6b0"
+            ]
+        ]
+    },
+    {
+        "id": "9048eb0ccf68e6b0",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "e39b52c12d8c656d",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Battery",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "604800",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1340,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "90c4067f8786aa66",
+        "type": "ui_chart",
+        "z": "6170f728d9918af4",
+        "name": "",
+        "group": "b16bb9b17958cbbc",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "RSSI",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-90",
+        "ymax": "0",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1330,
+        "y": 760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8875898292e3080f",
+        "type": "function",
+        "z": "6170f728d9918af4",
+        "name": "RSSI",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 760,
+        "wires": [
+            [
+                "90c4067f8786aa66"
+            ]
         ]
     },
     {
@@ -1713,16 +2032,56 @@
     {
         "id": "198b46051ef9f5b8",
         "type": "ui_group",
-        "name": "Group 1",
+        "name": "westlab",
         "tab": "a5c9d8af6c91220c",
         "order": 1,
         "disp": true,
-        "width": 6
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "6e3b318d09c8ce97",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "1eb7f8cddf96534d",
+        "order": 1,
+        "disp": true,
+        "width": 17,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "1c9efcc07064f7a4",
+        "type": "ui_group",
+        "name": "Group 2",
+        "tab": "1eb7f8cddf96534d",
+        "order": 2,
+        "disp": true,
+        "width": 17
+    },
+    {
+        "id": "e39b52c12d8c656d",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "8e1805d924de713b",
+        "order": 1,
+        "disp": true,
+        "width": 17
+    },
+    {
+        "id": "b16bb9b17958cbbc",
+        "type": "ui_group",
+        "name": "Group 2",
+        "tab": "8e1805d924de713b",
+        "order": 2,
+        "disp": true,
+        "width": 17
     },
     {
         "id": "f8ca21573b0c08cf",
         "type": "ui_tab",
-        "name": "Chart",
+        "name": "westlab",
         "icon": "dashboard",
         "disabled": false,
         "hidden": false
@@ -1733,6 +2092,24 @@
         "name": "監視",
         "icon": "dashboard",
         "order": 3,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "1eb7f8cddf96534d",
+        "type": "ui_tab",
+        "name": "orchid",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "8e1805d924de713b",
+        "type": "ui_tab",
+        "name": "noken",
+        "icon": "dashboard",
+        "order": 4,
         "disabled": false,
         "hidden": false
     }

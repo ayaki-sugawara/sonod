@@ -40,7 +40,7 @@ You can use this in the followin steps.
 ```bash
 git clone https://github.com/ayaki-sugawara/sonod.git
 cd sonod
-python3 child.py (sensor_mac_addr) (sensor_name)
+python3 child.py (sensor_mac_addr) (place) (sensor_name)
 ```
 * You do not have to write ":" in mac addr. This program automaticallly add them. 
 
