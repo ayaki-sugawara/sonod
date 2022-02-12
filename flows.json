@@ -541,7 +541,7 @@
         "type": "function",
         "z": "90c5f99da8f7592e",
         "name": "",
-        "func": "msg.filename = `${flow.get('path')}/state/${msg.payload.place}/${msg.payload.sensor}.txt`\nmsg.payload = msg.payload.pid;\nmsg.place = msg.payload.place;\nmsg.sensor = msg.payload.sensor;\nreturn msg;",
+        "func": "msg.filename = `${flow.get('path')}/state/${msg.payload.place}/${msg.payload.sensor}.txt`\nmsg.place = msg.payload.place;\nmsg.sensor = msg.payload.sensor;\nmsg.payload = msg.payload.pid;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
