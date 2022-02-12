@@ -1,1 +1,2138 @@
-[{"id":"6170f728d9918af4","type":"tab","label":"フロー 1","disabled":false,"info":""},{"id":"6d4fa3cbcd30608a","type":"mqtt in","z":"6170f728d9918af4","name":"","topic":"data","qos":"2","datatype":"auto","broker":"b8bb310206b263d4","nl":false,"rap":true,"rh":0,"x":110,"y":300,"wires":[["56473e3bbd3f3f26"]]},{"id":"ea64e07825aeb64a","type":"debug","z":"6170f728d9918af4","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":870,"y":300,"wires":[]},{"id":"56473e3bbd3f3f26","type":"json","z":"6170f728d9918af4","name":"","property":"payload","action":"obj","pretty":false,"x":250,"y":300,"wires":[["497fa704e6e1c733","f3388b0f018aa699"]]},{"id":"497fa704e6e1c733","type":"function","z":"6170f728d9918af4","name":"ファイル書き込み前準備","func":"let data = msg.payload.data;\nlet timestamp = msg.payload.timestamp;\nlet sensor = msg.payload.sensor;\nlet place = msg.payload.place;\nmsg.filename = `${flow.get('path')}/data/${place}/${timestamp.substr(0,7)}.csv`\nmsg.payload = [timestamp, sensor];\nfor (var key in data){\n    msg.payload.push(data[key])\n}\nmsg.payload = msg.payload.join();\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":470,"y":300,"wires":[["d6e63acb8eb8b43a"]]},{"id":"d6e63acb8eb8b43a","type":"file","z":"6170f728d9918af4","name":"","filename":"","appendNewline":true,"createDir":true,"overwriteFile":"false","encoding":"none","x":680,"y":300,"wires":[["ea64e07825aeb64a"]]},{"id":"5d8ea3095cf44ad1","type":"function","z":"6170f728d9918af4","name":"Temperature","func":"msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":850,"y":360,"wires":[["bb681a6f0db41af7"]]},{"id":"bb681a6f0db41af7","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"35b084e00d42b1fa","order":1,"width":0,"height":0,"label":"Temperature","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"10","ymax":"30","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"86400","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1210,"y":360,"wires":[[]]},{"id":"d90d75bef0a4e60f","type":"function","z":"6170f728d9918af4","name":"Humidity","func":"msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":860,"y":400,"wires":[["c3d19ba532ec3f47"]]},{"id":"c3d19ba532ec3f47","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"f5a14ffd55f6c590","order":1,"width":0,"height":0,"label":"Humidity","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"0","ymax":"100","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"86400","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1200,"y":400,"wires":[[]]},{"id":"d70c5c360acb7276","type":"mqtt in","z":"6170f728d9918af4","name":"","topic":"status","qos":"2","datatype":"auto","broker":"b8bb310206b263d4","nl":false,"rap":true,"rh":0,"x":110,"y":700,"wires":[["0e79ce4e5359ddf9"]]},{"id":"7ce8aa013a756d9b","type":"function","z":"6170f728d9918af4","name":"ファイル書き込み前準備","func":"// ローカル現在時刻の取得\nconst nowLocal = new Date()    // Wed Apr 22 2020 22:39:03 GMT+0900 (Japan Standard Time)\n\n// UTCとローカルタイムゾーンとの差を取得し、分からミリ秒に変換\nconst diff = nowLocal.getTimezoneOffset() * 60 * 1000    // -540 * 60 * 1000 = -32400000\n\n// toISOString()で、UTC時間になってしまう（-9時間）ので、日本時間に9時間足しておく\nconst plusLocal = new Date(nowLocal - diff)    // Thu Apr 23 2020 07:39:03 GMT+0900 (Japan Standard Time)\n\n// ISO形式に変換（UTCタイムゾーンで日本時間、というよくない状態）\nlet iso = plusLocal.toISOString()   // \"2020-04-22T22:39:03.397Z\"\n\n// UTCタイムゾーン部分は消して、日本のタイムゾーンの表記を足す\niso = iso.slice(0, 19) + '+09:00'    // \"2020-04-22T22:39:03+09:00\"\n\nlet timestamp = iso;\nlet sensor = msg.payload.sensor;\nlet battery = msg.payload.battery;\nlet rssi = msg.payload.rssi;\nlet place = msg.payload.place;\nmsg.filename = `${flow.get('path')}/status/${place}/${timestamp.substr(0,7)}.csv`\nmsg.payload = [timestamp, sensor, battery, rssi];\nmsg.payload = msg.payload.join();\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":470,"y":700,"wires":[["533dc718ec8d77d2"]]},{"id":"533dc718ec8d77d2","type":"file","z":"6170f728d9918af4","name":"","filename":"","appendNewline":true,"createDir":true,"overwriteFile":"false","encoding":"none","x":720,"y":700,"wires":[["d12cfbc36c21459c"]]},{"id":"d12cfbc36c21459c","type":"debug","z":"6170f728d9918af4","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":950,"y":700,"wires":[]},{"id":"0e79ce4e5359ddf9","type":"json","z":"6170f728d9918af4","name":"","property":"payload","action":"","pretty":false,"x":250,"y":700,"wires":[["7ce8aa013a756d9b","de0fc66bd3a7a5b4"]]},{"id":"df0521346887aea0","type":"function","z":"6170f728d9918af4","name":"Battery","func":"msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":940,"y":760,"wires":[["2b60ec87567e6e62"]]},{"id":"2b60ec87567e6e62","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"35b084e00d42b1fa","order":4,"width":0,"height":0,"label":"Battery","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"0","ymax":"100","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"604800","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1300,"y":760,"wires":[[]]},{"id":"2189bdb6781bdd94","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"f5a14ffd55f6c590","order":4,"width":0,"height":0,"label":"RSSI","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"-90","ymax":"0","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"86400","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1290,"y":800,"wires":[[]]},{"id":"71757771e7ac8188","type":"function","z":"6170f728d9918af4","name":"RSSI","func":"msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":930,"y":800,"wires":[["2189bdb6781bdd94"]]},{"id":"56b1137669dc2ecd","type":"mqtt in","z":"6170f728d9918af4","name":"","topic":"error","qos":"2","datatype":"auto","broker":"b8bb310206b263d4","nl":false,"rap":true,"rh":0,"x":110,"y":1000,"wires":[[]]},{"id":"2d063b4e2037522f","type":"ui_text","z":"6170f728d9918af4","group":"198b46051ef9f5b8","order":2,"width":0,"height":0,"name":"","label":"{{msg.topic}}","format":"{{msg.payload}}","layout":"row-spread","x":1330,"y":1220,"wires":[]},{"id":"4d2bfef4c51b6d91","type":"file in","z":"6170f728d9918af4","name":"","filename":"","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":940,"y":1220,"wires":[["031f580e724b1568"]]},{"id":"031f580e724b1568","type":"function","z":"6170f728d9918af4","name":"","func":"if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1160,"y":1220,"wires":[["2d063b4e2037522f"]]},{"id":"9463677d29422cd6","type":"comment","z":"6170f728d9918af4","name":"ステート監視","info":"","x":310,"y":1320,"wires":[]},{"id":"a70cf3f0b9bc63ac","type":"mqtt in","z":"6170f728d9918af4","name":"","topic":"state","qos":"2","datatype":"auto","broker":"b8bb310206b263d4","nl":false,"rap":true,"rh":0,"x":90,"y":1120,"wires":[["b6a1db5e2cfbddae"]]},{"id":"537d83136e1c87dc","type":"function","z":"6170f728d9918af4","name":"","func":"msg.filename = `${flow.get('path')}/state/${msg.payload.place}/${msg.payload.sensor}.txt`\nmsg.payload = msg.payload.pid;\nmsg.place = msg.payload.place;\nmsg.sensor = msg.payload.sensor;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":380,"y":1120,"wires":[["3da9031534735e80","4d8d7c6f555f85a7"]]},{"id":"b6a1db5e2cfbddae","type":"json","z":"6170f728d9918af4","name":"","property":"payload","action":"","pretty":false,"x":230,"y":1120,"wires":[["537d83136e1c87dc"]]},{"id":"3da9031534735e80","type":"file","z":"6170f728d9918af4","name":"","filename":"","appendNewline":true,"createDir":true,"overwriteFile":"true","encoding":"none","x":560,"y":1120,"wires":[[]]},{"id":"1b12bbba4b1c53c1","type":"inject","z":"6170f728d9918af4","d":true,"name":"1秒ごとに更新","props":[{"p":"filename","v":"/home/ayaki/sonod/state/westlab","vt":"str"}],"repeat":"1","crontab":"","once":false,"onceDelay":0.1,"topic":"","payloadType":"str","x":340,"y":1460,"wires":[["2256acd94434ea3d","32ef943b251f5000","7ab8fbac4b599c15","849c5a49084781a1","a78cad1b5641f162","6d526d6d90c029a7","c5ab0c7de0bbf087","3685263c94ab4876","2e1ea33c8d2bd8a2","61ad56a8421c135c"]]},{"id":"2256acd94434ea3d","type":"function","z":"6170f728d9918af4","name":"","func":"\nlet sensor_name = \"arashi\";\n\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":780,"y":1220,"wires":[["4d2bfef4c51b6d91"]]},{"id":"c51e73f49c02b0e9","type":"ui_text","z":"6170f728d9918af4","group":"198b46051ef9f5b8","order":2,"width":0,"height":0,"name":"","label":"{{msg.topic}}","format":"{{msg.payload}}","layout":"row-spread","x":1330,"y":1300,"wires":[]},{"id":"7e34779ef4c6a3e7","type":"file in","z":"6170f728d9918af4","name":"","filename":"","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":940,"y":1300,"wires":[["b064656448063832"]]},{"id":"b064656448063832","type":"function","z":"6170f728d9918af4","name":"","func":"if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1160,"y":1300,"wires":[["c51e73f49c02b0e9"]]},{"id":"32ef943b251f5000","type":"function","z":"6170f728d9918af4","name":"","func":"\nlet sensor_name = \"1\";\n\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":780,"y":1300,"wires":[["7e34779ef4c6a3e7"]]},{"id":"409b76434b0ad515","type":"ui_text","z":"6170f728d9918af4","group":"198b46051ef9f5b8","order":2,"width":0,"height":0,"name":"","label":"{{msg.topic}}","format":"{{msg.payload}}","layout":"row-spread","x":1330,"y":1360,"wires":[]},{"id":"f450fa44a8efe58a","type":"file in","z":"6170f728d9918af4","name":"","filename":"","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":940,"y":1360,"wires":[["7452f4246043e161"]]},{"id":"7452f4246043e161","type":"function","z":"6170f728d9918af4","name":"","func":"if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1160,"y":1360,"wires":[["409b76434b0ad515"]]},{"id":"7ab8fbac4b599c15","type":"function","z":"6170f728d9918af4","name":"","func":"\nlet sensor_name = \"2\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":780,"y":1360,"wires":[["f450fa44a8efe58a"]]},{"id":"9d08f51d31cf2d23","type":"ui_text","z":"6170f728d9918af4","group":"198b46051ef9f5b8","order":2,"width":0,"height":0,"name":"","label":"{{msg.topic}}","format":"{{msg.payload}}","layout":"row-spread","x":1330,"y":1420,"wires":[]},{"id":"02e212f008c7b139","type":"file in","z":"6170f728d9918af4","name":"","filename":"","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":940,"y":1420,"wires":[["e80edb480991559f"]]},{"id":"e80edb480991559f","type":"function","z":"6170f728d9918af4","name":"","func":"if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1160,"y":1420,"wires":[["9d08f51d31cf2d23"]]},{"id":"849c5a49084781a1","type":"function","z":"6170f728d9918af4","name":"","func":"\nlet sensor_name = \"3\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":780,"y":1420,"wires":[["02e212f008c7b139"]]},{"id":"326a077be000cda1","type":"ui_text","z":"6170f728d9918af4","group":"198b46051ef9f5b8","order":2,"width":0,"height":0,"name":"","label":"{{msg.topic}}","format":"{{msg.payload}}","layout":"row-spread","x":1330,"y":1480,"wires":[]},{"id":"0f045134db8fcefd","type":"file in","z":"6170f728d9918af4","name":"","filename":"","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":940,"y":1480,"wires":[["458972e6a69c5e6e"]]},{"id":"458972e6a69c5e6e","type":"function","z":"6170f728d9918af4","name":"","func":"if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1160,"y":1480,"wires":[["326a077be000cda1"]]},{"id":"a78cad1b5641f162","type":"function","z":"6170f728d9918af4","name":"","func":"\nlet sensor_name = \"4\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":780,"y":1480,"wires":[["0f045134db8fcefd"]]},{"id":"cc7acd4d5f7c5cc5","type":"ui_text","z":"6170f728d9918af4","group":"198b46051ef9f5b8","order":2,"width":0,"height":0,"name":"","label":"{{msg.topic}}","format":"{{msg.payload}}","layout":"row-spread","x":1330,"y":1540,"wires":[]},{"id":"37be0df972f0ac3f","type":"file in","z":"6170f728d9918af4","name":"","filename":"","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":940,"y":1540,"wires":[["215fb0178a435378"]]},{"id":"215fb0178a435378","type":"function","z":"6170f728d9918af4","name":"","func":"if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1160,"y":1540,"wires":[["cc7acd4d5f7c5cc5"]]},{"id":"6d526d6d90c029a7","type":"function","z":"6170f728d9918af4","name":"","func":"\nlet sensor_name = \"6\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":780,"y":1540,"wires":[["37be0df972f0ac3f"]]},{"id":"38d2dbee9357cb56","type":"ui_text","z":"6170f728d9918af4","group":"198b46051ef9f5b8","order":2,"width":0,"height":0,"name":"","label":"{{msg.topic}}","format":"{{msg.payload}}","layout":"row-spread","x":1330,"y":1600,"wires":[]},{"id":"6171ee35f8eb3f13","type":"file in","z":"6170f728d9918af4","name":"","filename":"","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":940,"y":1600,"wires":[["06feb55f39618974"]]},{"id":"06feb55f39618974","type":"function","z":"6170f728d9918af4","name":"","func":"if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1160,"y":1600,"wires":[["38d2dbee9357cb56"]]},{"id":"c5ab0c7de0bbf087","type":"function","z":"6170f728d9918af4","name":"","func":"\nlet sensor_name = \"7\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":780,"y":1600,"wires":[["6171ee35f8eb3f13"]]},{"id":"24f296cd76e5e7d2","type":"ui_text","z":"6170f728d9918af4","group":"198b46051ef9f5b8","order":2,"width":0,"height":0,"name":"","label":"{{msg.topic}}","format":"{{msg.payload}}","layout":"row-spread","x":1350,"y":1660,"wires":[]},{"id":"8101149fc9c2c9d9","type":"file in","z":"6170f728d9918af4","name":"","filename":"","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":960,"y":1660,"wires":[["c5d84e6824873658"]]},{"id":"c5d84e6824873658","type":"function","z":"6170f728d9918af4","name":"","func":"if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1180,"y":1660,"wires":[["24f296cd76e5e7d2"]]},{"id":"3685263c94ab4876","type":"function","z":"6170f728d9918af4","name":"","func":"\nlet sensor_name = \"8\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":800,"y":1660,"wires":[["8101149fc9c2c9d9"]]},{"id":"d2986ebacd7570e5","type":"ui_text","z":"6170f728d9918af4","group":"198b46051ef9f5b8","order":2,"width":0,"height":0,"name":"","label":"{{msg.topic}}","format":"{{msg.payload}}","layout":"row-spread","x":1350,"y":1720,"wires":[]},{"id":"7854d2bb01c40ad6","type":"file in","z":"6170f728d9918af4","name":"","filename":"","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":960,"y":1720,"wires":[["ca40369b8c42e600"]]},{"id":"ca40369b8c42e600","type":"function","z":"6170f728d9918af4","name":"","func":"if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1180,"y":1720,"wires":[["d2986ebacd7570e5"]]},{"id":"2e1ea33c8d2bd8a2","type":"function","z":"6170f728d9918af4","name":"","func":"\nlet sensor_name = \"9\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":800,"y":1720,"wires":[["7854d2bb01c40ad6"]]},{"id":"782cead7c25d6a37","type":"ui_text","z":"6170f728d9918af4","group":"198b46051ef9f5b8","order":2,"width":0,"height":0,"name":"","label":"{{msg.topic}}","format":"{{msg.payload}}","layout":"row-spread","x":1350,"y":1780,"wires":[]},{"id":"67bc581a876a2b40","type":"file in","z":"6170f728d9918af4","name":"","filename":"","format":"utf8","chunk":false,"sendError":false,"encoding":"none","x":960,"y":1780,"wires":[["c7ff4482eff43d74"]]},{"id":"c7ff4482eff43d74","type":"function","z":"6170f728d9918af4","name":"","func":"if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":1180,"y":1780,"wires":[["782cead7c25d6a37"]]},{"id":"61ad56a8421c135c","type":"function","z":"6170f728d9918af4","name":"","func":"\nlet sensor_name = \"10\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":800,"y":1780,"wires":[["67bc581a876a2b40"]]},{"id":"2b9df3c071642108","type":"comment","z":"6170f728d9918af4","name":"placeごとに作るのが良い","info":"","x":350,"y":1400,"wires":[]},{"id":"bc3d276beb590387","type":"http request","z":"6170f728d9918af4","name":"","method":"POST","ret":"txt","paytoqs":"ignore","url":"https://notify-api.line.me/api/notify","tls":"","persist":false,"proxy":"","authType":"","x":970,"y":1060,"wires":[[]]},{"id":"4d8d7c6f555f85a7","type":"switch","z":"6170f728d9918af4","name":"","property":"payload","propertyType":"msg","rules":[{"t":"eq","v":"0","vt":"str"}],"checkall":"true","repair":false,"outputs":1,"x":590,"y":1060,"wires":[["06aa2c7a15d66560"]]},{"id":"06aa2c7a15d66560","type":"function","z":"6170f728d9918af4","name":"LINE Tokenの設定","func":"msg.headers = {\n    \"Authorization\": \"Bearer L1OArSqiwLgH4B5D6aOxRsHbAhv9Y2Opn5JW9Xg0UkD\"\n}\n\nmsg.payload = {\n    \"message\": `${msg.place}の${msg.sensor}のプログラムが停止しました`\n}\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":770,"y":1060,"wires":[[]]},{"id":"f3388b0f018aa699","type":"switch","z":"6170f728d9918af4","name":"","property":"payload.place","propertyType":"msg","rules":[{"t":"eq","v":"westlab","vt":"str"},{"t":"eq","v":"orchid","vt":"str"},{"t":"eq","v":"noken","vt":"str"}],"checkall":"true","repair":false,"outputs":3,"x":430,"y":360,"wires":[["d90d75bef0a4e60f","5d8ea3095cf44ad1"],["2568dc308cd3b7ed","6e679e4babd54dc9"],["fa90f75990b4c875","1060442002b16b63"]]},{"id":"de0fc66bd3a7a5b4","type":"switch","z":"6170f728d9918af4","name":"","property":"payload.place","propertyType":"msg","rules":[{"t":"eq","v":"westlab","vt":"str"},{"t":"eq","v":"orchid","vt":"str"},{"t":"eq","v":"noken","vt":"str"}],"checkall":"true","repair":false,"outputs":3,"x":430,"y":760,"wires":[["71757771e7ac8188","df0521346887aea0"],["19d6722eabf6a67f","5801fd8b679430d8"],["d1278cc25c86a71a","8875898292e3080f"]]},{"id":"2568dc308cd3b7ed","type":"function","z":"6170f728d9918af4","name":"Temperature","func":"msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":870,"y":460,"wires":[["fad5aa432a6b7d1e"]]},{"id":"fad5aa432a6b7d1e","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"6e3b318d09c8ce97","order":2,"width":0,"height":0,"label":"Temperature","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"10","ymax":"30","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"86400","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1230,"y":460,"wires":[[]]},{"id":"6e679e4babd54dc9","type":"function","z":"6170f728d9918af4","name":"Humidity","func":"msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":880,"y":500,"wires":[["0b441ef03b40ebe9"]]},{"id":"0b441ef03b40ebe9","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"1c9efcc07064f7a4","order":2,"width":0,"height":0,"label":"Humidity","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"0","ymax":"100","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"86400","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1220,"y":500,"wires":[[]]},{"id":"fa90f75990b4c875","type":"function","z":"6170f728d9918af4","name":"Temperature","func":"msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":870,"y":560,"wires":[["0a37cc567810503a"]]},{"id":"0a37cc567810503a","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"e39b52c12d8c656d","order":3,"width":0,"height":0,"label":"Temperature","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"10","ymax":"30","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"86400","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1230,"y":560,"wires":[[]]},{"id":"1060442002b16b63","type":"function","z":"6170f728d9918af4","name":"Humidity","func":"msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":880,"y":600,"wires":[["1d6e65523a33b851"]]},{"id":"1d6e65523a33b851","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"b16bb9b17958cbbc","order":3,"width":0,"height":0,"label":"Humidity","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"0","ymax":"100","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"86400","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1220,"y":600,"wires":[[]]},{"id":"19d6722eabf6a67f","type":"function","z":"6170f728d9918af4","name":"Battery","func":"msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":940,"y":840,"wires":[["20acefabc5ca09af"]]},{"id":"20acefabc5ca09af","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"6e3b318d09c8ce97","order":4,"width":0,"height":0,"label":"Battery","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"0","ymax":"100","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"604800","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1300,"y":840,"wires":[[]]},{"id":"fd9f53bdc2480006","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"1c9efcc07064f7a4","order":4,"width":0,"height":0,"label":"RSSI","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"-90","ymax":"0","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"86400","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1290,"y":880,"wires":[[]]},{"id":"5801fd8b679430d8","type":"function","z":"6170f728d9918af4","name":"RSSI","func":"msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":930,"y":880,"wires":[["fd9f53bdc2480006"]]},{"id":"d1278cc25c86a71a","type":"function","z":"6170f728d9918af4","name":"Battery","func":"msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":940,"y":940,"wires":[["9048eb0ccf68e6b0"]]},{"id":"9048eb0ccf68e6b0","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"e39b52c12d8c656d","order":4,"width":0,"height":0,"label":"Battery","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"0","ymax":"100","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"604800","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1300,"y":940,"wires":[[]]},{"id":"90c4067f8786aa66","type":"ui_chart","z":"6170f728d9918af4","name":"","group":"b16bb9b17958cbbc","order":4,"width":0,"height":0,"label":"RSSI","chartType":"line","legend":"true","xformat":"HH:mm:ss","interpolate":"linear","nodata":"","dot":false,"ymin":"-90","ymax":"0","removeOlder":1,"removeOlderPoints":"","removeOlderUnit":"86400","cutout":0,"useOneColor":false,"useUTC":false,"colors":["#1f77b4","#aec7e8","#ff7f0e","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5"],"outputs":1,"useDifferentColor":false,"x":1290,"y":980,"wires":[[]]},{"id":"8875898292e3080f","type":"function","z":"6170f728d9918af4","name":"RSSI","func":"msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":930,"y":980,"wires":[["90c4067f8786aa66"]]},{"id":"56e01892.82eaf8","type":"comment","z":"6170f728d9918af4","name":" ファイルパス！","info":"","x":340,"y":1500,"wires":[]},{"id":"ebc582f.c55878","type":"comment","z":"6170f728d9918af4","name":"センサーネームの入力！","info":"","x":810,"y":1160,"wires":[]},{"id":"1c5716ee.0561b9","type":"inject","z":"6170f728d9918af4","name":"ファイルパスの設定","props":[{"p":"path","v":"/home/ayaki/sonod","vt":"str"}],"repeat":"","crontab":"","once":true,"onceDelay":0.1,"topic":"","x":190,"y":80,"wires":[["b6b52718.6b2e78"]]},{"id":"1ec7cd99.9d59b2","type":"comment","z":"6170f728d9918af4","name":"このノードでプロジェクトのルートディレクトリを設定すること！","info":"","x":300,"y":40,"wires":[]},{"id":"b6b52718.6b2e78","type":"change","z":"6170f728d9918af4","name":"","rules":[{"t":"set","p":"path","pt":"flow","to":"path","tot":"msg"}],"action":"","property":"","from":"","to":"","reg":false,"x":430,"y":80,"wires":[[]]},{"id":"b8bb310206b263d4","type":"mqtt-broker","name":"","broker":"localhost","port":"1883","clientid":"","usetls":false,"protocolVersion":"4","keepalive":"60","cleansession":true,"birthTopic":"","birthQos":"0","birthPayload":"","birthMsg":{},"closeTopic":"","closeQos":"0","closePayload":"","closeMsg":{},"willTopic":"","willQos":"0","willPayload":"","willMsg":{},"sessionExpiry":""},{"id":"35b084e00d42b1fa","type":"ui_group","name":"名前","tab":"f8ca21573b0c08cf","order":1,"disp":false,"width":"17","collapse":false},{"id":"f5a14ffd55f6c590","type":"ui_group","name":"Group 2","tab":"f8ca21573b0c08cf","order":2,"disp":false,"width":"17","collapse":false},{"id":"198b46051ef9f5b8","type":"ui_group","name":"westlab","tab":"a5c9d8af6c91220c","order":1,"disp":true,"width":"6","collapse":false},{"id":"6e3b318d09c8ce97","type":"ui_group","name":"Group 1","tab":"1eb7f8cddf96534d","order":1,"disp":true,"width":17,"collapse":false},{"id":"1c9efcc07064f7a4","type":"ui_group","name":"Group 2","tab":"1eb7f8cddf96534d","order":2,"disp":true,"width":17},{"id":"e39b52c12d8c656d","type":"ui_group","name":"Group 1","tab":"8e1805d924de713b","order":1,"disp":true,"width":17},{"id":"b16bb9b17958cbbc","type":"ui_group","name":"Group 2","tab":"8e1805d924de713b","order":2,"disp":true,"width":17},{"id":"f8ca21573b0c08cf","type":"ui_tab","name":"westlab","icon":"dashboard","disabled":false,"hidden":false},{"id":"a5c9d8af6c91220c","type":"ui_tab","name":"監視","icon":"dashboard","order":3,"disabled":false,"hidden":false},{"id":"1eb7f8cddf96534d","type":"ui_tab","name":"orchid","icon":"dashboard","order":3,"disabled":false,"hidden":false},{"id":"8e1805d924de713b","type":"ui_tab","name":"noken","icon":"dashboard","order":4,"disabled":false,"hidden":false}]
+[
+    {
+        "id": "90c5f99da8f7592e",
+        "type": "tab",
+        "label": "フロー 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "d3e1a1d162d68643",
+        "type": "mqtt in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "topic": "data",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "b8bb310206b263d4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 110,
+        "y": 300,
+        "wires": [
+            [
+                "2806f91ebf91a4d9"
+            ]
+        ]
+    },
+    {
+        "id": "490aee430b85a117",
+        "type": "debug",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 870,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "2806f91ebf91a4d9",
+        "type": "json",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 250,
+        "y": 300,
+        "wires": [
+            [
+                "28d54fb73d0903cb",
+                "f08640919c80cede"
+            ]
+        ]
+    },
+    {
+        "id": "28d54fb73d0903cb",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "ファイル書き込み前準備",
+        "func": "let data = msg.payload.data;\nlet timestamp = msg.payload.timestamp;\nlet sensor = msg.payload.sensor;\nlet place = msg.payload.place;\nmsg.filename = `${flow.get('path')}/data/${place}/${timestamp.substr(0,7)}.csv`\nmsg.payload = [timestamp, sensor];\nfor (var key in data){\n    msg.payload.push(data[key])\n}\nmsg.payload = msg.payload.join();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 300,
+        "wires": [
+            [
+                "682b6a50eb973689"
+            ]
+        ]
+    },
+    {
+        "id": "682b6a50eb973689",
+        "type": "file",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 680,
+        "y": 300,
+        "wires": [
+            [
+                "490aee430b85a117"
+            ]
+        ]
+    },
+    {
+        "id": "fe58fa8b2ba7a3f7",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "Temperature",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 360,
+        "wires": [
+            [
+                "dc4538756a65ca80"
+            ]
+        ]
+    },
+    {
+        "id": "dc4538756a65ca80",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "35b084e00d42b1fa",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Temperature",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "10",
+        "ymax": "30",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1210,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "390b48c1d649d978",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "Humidity",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 400,
+        "wires": [
+            [
+                "3dd614bed42a0cbc"
+            ]
+        ]
+    },
+    {
+        "id": "3dd614bed42a0cbc",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "f5a14ffd55f6c590",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Humidity",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1200,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c50be58c5a6e55dd",
+        "type": "mqtt in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "topic": "status",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "b8bb310206b263d4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 110,
+        "y": 700,
+        "wires": [
+            [
+                "b4ad95ffeb4fa1ce"
+            ]
+        ]
+    },
+    {
+        "id": "ae39e09b9a5f8e86",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "ファイル書き込み前準備",
+        "func": "// ローカル現在時刻の取得\nconst nowLocal = new Date()    // Wed Apr 22 2020 22:39:03 GMT+0900 (Japan Standard Time)\n\n// UTCとローカルタイムゾーンとの差を取得し、分からミリ秒に変換\nconst diff = nowLocal.getTimezoneOffset() * 60 * 1000    // -540 * 60 * 1000 = -32400000\n\n// toISOString()で、UTC時間になってしまう（-9時間）ので、日本時間に9時間足しておく\nconst plusLocal = new Date(nowLocal - diff)    // Thu Apr 23 2020 07:39:03 GMT+0900 (Japan Standard Time)\n\n// ISO形式に変換（UTCタイムゾーンで日本時間、というよくない状態）\nlet iso = plusLocal.toISOString()   // \"2020-04-22T22:39:03.397Z\"\n\n// UTCタイムゾーン部分は消して、日本のタイムゾーンの表記を足す\niso = iso.slice(0, 19) + '+09:00'    // \"2020-04-22T22:39:03+09:00\"\n\nlet timestamp = iso;\nlet sensor = msg.payload.sensor;\nlet battery = msg.payload.battery;\nlet rssi = msg.payload.rssi;\nlet place = msg.payload.place;\nmsg.filename = `${flow.get('path')}/status/${place}/${timestamp.substr(0,7)}.csv`\nmsg.payload = [timestamp, sensor, battery, rssi];\nmsg.payload = msg.payload.join();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 700,
+        "wires": [
+            [
+                "4e6fe938f7125bfc"
+            ]
+        ]
+    },
+    {
+        "id": "4e6fe938f7125bfc",
+        "type": "file",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 720,
+        "y": 700,
+        "wires": [
+            [
+                "c668c986c115818d"
+            ]
+        ]
+    },
+    {
+        "id": "c668c986c115818d",
+        "type": "debug",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "b4ad95ffeb4fa1ce",
+        "type": "json",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 250,
+        "y": 700,
+        "wires": [
+            [
+                "ae39e09b9a5f8e86",
+                "9be83b2b1c807ec6"
+            ]
+        ]
+    },
+    {
+        "id": "b239030739f67746",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "Battery",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 760,
+        "wires": [
+            [
+                "71a9b621f09d5804"
+            ]
+        ]
+    },
+    {
+        "id": "71a9b621f09d5804",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "35b084e00d42b1fa",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Battery",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "604800",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1300,
+        "y": 760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8ca6414e62f651e1",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "f5a14ffd55f6c590",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "RSSI",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-90",
+        "ymax": "0",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1290,
+        "y": 800,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "71fa9b9fded63ab8",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "RSSI",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 800,
+        "wires": [
+            [
+                "8ca6414e62f651e1"
+            ]
+        ]
+    },
+    {
+        "id": "d5754515c5afe24b",
+        "type": "mqtt in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "topic": "error",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "b8bb310206b263d4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 110,
+        "y": 1000,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "67d5b2ec6bceced7",
+        "type": "ui_text",
+        "z": "90c5f99da8f7592e",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1330,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "2eebcafdef734ecd",
+        "type": "file in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 940,
+        "y": 1220,
+        "wires": [
+            [
+                "066b7a22c4307308"
+            ]
+        ]
+    },
+    {
+        "id": "066b7a22c4307308",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1160,
+        "y": 1220,
+        "wires": [
+            [
+                "67d5b2ec6bceced7"
+            ]
+        ]
+    },
+    {
+        "id": "edf2aa3698f9dad9",
+        "type": "comment",
+        "z": "90c5f99da8f7592e",
+        "name": "ステート監視",
+        "info": "",
+        "x": 310,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "1a4e0366b2b8172b",
+        "type": "mqtt in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "topic": "state",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "b8bb310206b263d4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 90,
+        "y": 1120,
+        "wires": [
+            [
+                "5ebba0ab2cf95acf"
+            ]
+        ]
+    },
+    {
+        "id": "55e171c11051b939",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "msg.filename = `${flow.get('path')}/state/${msg.payload.place}/${msg.payload.sensor}.txt`\nmsg.place = msg.payload.place;\nmsg.sensor = msg.payload.sensor;\nmsg.payload = msg.payload.pid;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 1120,
+        "wires": [
+            [
+                "1232f01a59804c94",
+                "cca1f8ea89aa9372"
+            ]
+        ]
+    },
+    {
+        "id": "5ebba0ab2cf95acf",
+        "type": "json",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 230,
+        "y": 1120,
+        "wires": [
+            [
+                "55e171c11051b939"
+            ]
+        ]
+    },
+    {
+        "id": "1232f01a59804c94",
+        "type": "file",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 560,
+        "y": 1120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "acc825ed5057a7ff",
+        "type": "inject",
+        "z": "90c5f99da8f7592e",
+        "name": "1秒ごとに更新",
+        "props": [
+            {
+                "p": "filename",
+                "v": "/home/ayu/sonod/state/orchid",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 340,
+        "y": 1460,
+        "wires": [
+            [
+                "ba5e3666c2628213"
+            ]
+        ]
+    },
+    {
+        "id": "ba5e3666c2628213",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "\nlet sensor_name = \"ayu\";\n\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1220,
+        "wires": [
+            [
+                "2eebcafdef734ecd"
+            ]
+        ]
+    },
+    {
+        "id": "bf8ab115fb14ced6",
+        "type": "ui_text",
+        "z": "90c5f99da8f7592e",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1330,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "0695dc0469ea8d4c",
+        "type": "file in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 940,
+        "y": 1300,
+        "wires": [
+            [
+                "1296e74fb4d4edaf"
+            ]
+        ]
+    },
+    {
+        "id": "1296e74fb4d4edaf",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1160,
+        "y": 1300,
+        "wires": [
+            [
+                "bf8ab115fb14ced6"
+            ]
+        ]
+    },
+    {
+        "id": "4a39a83fa872a699",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "\nlet sensor_name = \"1\";\n\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1300,
+        "wires": [
+            [
+                "0695dc0469ea8d4c"
+            ]
+        ]
+    },
+    {
+        "id": "b94297c448f57d34",
+        "type": "ui_text",
+        "z": "90c5f99da8f7592e",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1330,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "48bd73ffd27ee060",
+        "type": "file in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 940,
+        "y": 1360,
+        "wires": [
+            [
+                "58739d993fbd5555"
+            ]
+        ]
+    },
+    {
+        "id": "58739d993fbd5555",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1160,
+        "y": 1360,
+        "wires": [
+            [
+                "b94297c448f57d34"
+            ]
+        ]
+    },
+    {
+        "id": "29565b30e62050db",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "\nlet sensor_name = \"2\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1360,
+        "wires": [
+            [
+                "48bd73ffd27ee060"
+            ]
+        ]
+    },
+    {
+        "id": "7d25936437c689b4",
+        "type": "ui_text",
+        "z": "90c5f99da8f7592e",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1330,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "021e424e205fdcd1",
+        "type": "file in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 940,
+        "y": 1420,
+        "wires": [
+            [
+                "1b282e5abee85a9d"
+            ]
+        ]
+    },
+    {
+        "id": "1b282e5abee85a9d",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1160,
+        "y": 1420,
+        "wires": [
+            [
+                "7d25936437c689b4"
+            ]
+        ]
+    },
+    {
+        "id": "d9e0ddb258bad73c",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "\nlet sensor_name = \"3\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1420,
+        "wires": [
+            [
+                "021e424e205fdcd1"
+            ]
+        ]
+    },
+    {
+        "id": "0b0c55b0bf6b1f42",
+        "type": "ui_text",
+        "z": "90c5f99da8f7592e",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1330,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "a7e3997b4187f5f1",
+        "type": "file in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 940,
+        "y": 1480,
+        "wires": [
+            [
+                "14ed4809320ad76d"
+            ]
+        ]
+    },
+    {
+        "id": "14ed4809320ad76d",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1160,
+        "y": 1480,
+        "wires": [
+            [
+                "0b0c55b0bf6b1f42"
+            ]
+        ]
+    },
+    {
+        "id": "f70ac609c1802306",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "\nlet sensor_name = \"4\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1480,
+        "wires": [
+            [
+                "a7e3997b4187f5f1"
+            ]
+        ]
+    },
+    {
+        "id": "bfddc51bcfbfa0d6",
+        "type": "ui_text",
+        "z": "90c5f99da8f7592e",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1330,
+        "y": 1540,
+        "wires": []
+    },
+    {
+        "id": "b9c97f7b43993d1f",
+        "type": "file in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 940,
+        "y": 1540,
+        "wires": [
+            [
+                "4b49a5178b61d57d"
+            ]
+        ]
+    },
+    {
+        "id": "4b49a5178b61d57d",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1160,
+        "y": 1540,
+        "wires": [
+            [
+                "bfddc51bcfbfa0d6"
+            ]
+        ]
+    },
+    {
+        "id": "db819ba76fee4a8e",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "\nlet sensor_name = \"6\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1540,
+        "wires": [
+            [
+                "b9c97f7b43993d1f"
+            ]
+        ]
+    },
+    {
+        "id": "627dc49b532882eb",
+        "type": "ui_text",
+        "z": "90c5f99da8f7592e",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1330,
+        "y": 1600,
+        "wires": []
+    },
+    {
+        "id": "b706b7f4d3ef9331",
+        "type": "file in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 940,
+        "y": 1600,
+        "wires": [
+            [
+                "ffc278b663316b09"
+            ]
+        ]
+    },
+    {
+        "id": "ffc278b663316b09",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1160,
+        "y": 1600,
+        "wires": [
+            [
+                "627dc49b532882eb"
+            ]
+        ]
+    },
+    {
+        "id": "9fa14cb4911d0e99",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "\nlet sensor_name = \"7\";\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1600,
+        "wires": [
+            [
+                "b706b7f4d3ef9331"
+            ]
+        ]
+    },
+    {
+        "id": "3ec44680a59219fa",
+        "type": "ui_text",
+        "z": "90c5f99da8f7592e",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1350,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "82efd4537ed649e2",
+        "type": "file in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 960,
+        "y": 1660,
+        "wires": [
+            [
+                "79755b2bad4748af"
+            ]
+        ]
+    },
+    {
+        "id": "79755b2bad4748af",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1180,
+        "y": 1660,
+        "wires": [
+            [
+                "3ec44680a59219fa"
+            ]
+        ]
+    },
+    {
+        "id": "bc5eb918587a91a8",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "\nlet sensor_name = \"8\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 1660,
+        "wires": [
+            [
+                "82efd4537ed649e2"
+            ]
+        ]
+    },
+    {
+        "id": "7f754b0e9493cc1d",
+        "type": "ui_text",
+        "z": "90c5f99da8f7592e",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1350,
+        "y": 1720,
+        "wires": []
+    },
+    {
+        "id": "75e5f5fd7ef3aff3",
+        "type": "file in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 960,
+        "y": 1720,
+        "wires": [
+            [
+                "c2f145ecf852be2b"
+            ]
+        ]
+    },
+    {
+        "id": "c2f145ecf852be2b",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1180,
+        "y": 1720,
+        "wires": [
+            [
+                "7f754b0e9493cc1d"
+            ]
+        ]
+    },
+    {
+        "id": "5ef64e79590eaca8",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "\nlet sensor_name = \"9\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 1720,
+        "wires": [
+            [
+                "75e5f5fd7ef3aff3"
+            ]
+        ]
+    },
+    {
+        "id": "a13ef93364ad551e",
+        "type": "ui_text",
+        "z": "90c5f99da8f7592e",
+        "group": "198b46051ef9f5b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "{{msg.topic}}",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1350,
+        "y": 1780,
+        "wires": []
+    },
+    {
+        "id": "1e1447f77f986cd7",
+        "type": "file in",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "x": 960,
+        "y": 1780,
+        "wires": [
+            [
+                "29ba965c6b9b61c7"
+            ]
+        ]
+    },
+    {
+        "id": "29ba965c6b9b61c7",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "if (msg.payload == 0){\n    msg.payload = \"Program is not working\";\n} else {\n    msg.payload = `Process ID is ${msg.payload}`\n}\nmsg.topic = msg.filename.match(/(\\w*).txt/)[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1180,
+        "y": 1780,
+        "wires": [
+            [
+                "a13ef93364ad551e"
+            ]
+        ]
+    },
+    {
+        "id": "1b769ab0c7ce701d",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "func": "\nlet sensor_name = \"10\";\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 1780,
+        "wires": [
+            [
+                "1e1447f77f986cd7"
+            ]
+        ]
+    },
+    {
+        "id": "293fbdeac4108f3c",
+        "type": "comment",
+        "z": "90c5f99da8f7592e",
+        "name": "placeごとに作るのが良い",
+        "info": "",
+        "x": 350,
+        "y": 1400,
+        "wires": []
+    },
+    {
+        "id": "cca1f8ea89aa9372",
+        "type": "switch",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 590,
+        "y": 1060,
+        "wires": [
+            [
+                "503c9420144888bf"
+            ]
+        ]
+    },
+    {
+        "id": "503c9420144888bf",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "LINE messageの設定",
+        "func": "\nmsg.payload = `${msg.place}の${msg.sensor}のプログラムが停止しました`\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1060,
+        "wires": [
+            [
+                "6922d103204380f1"
+            ]
+        ]
+    },
+    {
+        "id": "f08640919c80cede",
+        "type": "switch",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "property": "payload.place",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "westlab",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "orchid",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "noken",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 430,
+        "y": 360,
+        "wires": [
+            [
+                "390b48c1d649d978",
+                "fe58fa8b2ba7a3f7"
+            ],
+            [
+                "175102cb1823eb35",
+                "51378ce2d338a934"
+            ],
+            [
+                "5832931416ca6485",
+                "3c7d457d71ea22bd"
+            ]
+        ]
+    },
+    {
+        "id": "9be83b2b1c807ec6",
+        "type": "switch",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "property": "payload.place",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "westlab",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "orchid",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "noken",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 430,
+        "y": 760,
+        "wires": [
+            [
+                "71fa9b9fded63ab8",
+                "b239030739f67746"
+            ],
+            [
+                "bf9541570d730580",
+                "652aa9c1a10d59ac"
+            ],
+            [
+                "65623046d68b86bc",
+                "3df4bb1715d8c912"
+            ]
+        ]
+    },
+    {
+        "id": "175102cb1823eb35",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "Temperature",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 460,
+        "wires": [
+            [
+                "8343996e0e5d2343"
+            ]
+        ]
+    },
+    {
+        "id": "8343996e0e5d2343",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "aa014ce7185298b8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Temperature",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "10",
+        "ymax": "30",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1230,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "51378ce2d338a934",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "Humidity",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 500,
+        "wires": [
+            [
+                "ed0e050c7360cbc4"
+            ]
+        ]
+    },
+    {
+        "id": "ed0e050c7360cbc4",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "6513a198e70867a4",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Humidity",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1220,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5832931416ca6485",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "Temperature",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.temperature;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 560,
+        "wires": [
+            [
+                "f283843cd88da6d3"
+            ]
+        ]
+    },
+    {
+        "id": "f283843cd88da6d3",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "04292aef31305dbc",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "Temperature",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "10",
+        "ymax": "30",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1230,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3c7d457d71ea22bd",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "Humidity",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.timestamp = msg.payload.timestamp;\nmsg.payload = msg.payload.data.humidity;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 600,
+        "wires": [
+            [
+                "e308c9beddbb679a"
+            ]
+        ]
+    },
+    {
+        "id": "e308c9beddbb679a",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "3889236a8cd8608e",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "Humidity",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1220,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bf9541570d730580",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "Battery",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 840,
+        "wires": [
+            [
+                "686328d913dd1ea5"
+            ]
+        ]
+    },
+    {
+        "id": "686328d913dd1ea5",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "aa014ce7185298b8",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Battery",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "604800",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1300,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "75ce2ee95e22026e",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "6513a198e70867a4",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "RSSI",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-90",
+        "ymax": "0",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1290,
+        "y": 880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "652aa9c1a10d59ac",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "RSSI",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 880,
+        "wires": [
+            [
+                "75ce2ee95e22026e"
+            ]
+        ]
+    },
+    {
+        "id": "65623046d68b86bc",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "Battery",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.battery/33;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 940,
+        "wires": [
+            [
+                "447957be63eb4118"
+            ]
+        ]
+    },
+    {
+        "id": "447957be63eb4118",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "04292aef31305dbc",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Battery",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "604800",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1300,
+        "y": 940,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cb4880861b025d0f",
+        "type": "ui_chart",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "group": "3889236a8cd8608e",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "RSSI",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "-90",
+        "ymax": "0",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 1290,
+        "y": 980,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3df4bb1715d8c912",
+        "type": "function",
+        "z": "90c5f99da8f7592e",
+        "name": "RSSI",
+        "func": "msg.topic = msg.payload.sensor;\nmsg.payload = msg.payload.rssi;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 980,
+        "wires": [
+            [
+                "cb4880861b025d0f"
+            ]
+        ]
+    },
+    {
+        "id": "c9275368e61ba471",
+        "type": "comment",
+        "z": "90c5f99da8f7592e",
+        "name": " ファイルパス！",
+        "info": "",
+        "x": 340,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "a6215f4037f8b8a2",
+        "type": "comment",
+        "z": "90c5f99da8f7592e",
+        "name": "センサーネームの入力！",
+        "info": "",
+        "x": 810,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "aacf004013e07f40",
+        "type": "inject",
+        "z": "90c5f99da8f7592e",
+        "name": "ファイルパスの設定",
+        "props": [
+            {
+                "p": "path",
+                "v": "/home/ayu/sonod",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 190,
+        "y": 80,
+        "wires": [
+            [
+                "d98fbdddbb72cdbf"
+            ]
+        ]
+    },
+    {
+        "id": "c0da94186cb20f62",
+        "type": "comment",
+        "z": "90c5f99da8f7592e",
+        "name": "このノードでプロジェクトのルートディレクトリを設定すること！",
+        "info": "",
+        "x": 300,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "d98fbdddbb72cdbf",
+        "type": "change",
+        "z": "90c5f99da8f7592e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "path",
+                "pt": "flow",
+                "to": "path",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6922d103204380f1",
+        "type": "Notify",
+        "z": "90c5f99da8f7592e",
+        "name": "sonod",
+        "x": 990,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "b8bb310206b263d4",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "10.24.8.31",
+        "port": "24883",
+        "clientid": "",
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "35b084e00d42b1fa",
+        "type": "ui_group",
+        "name": "名前",
+        "tab": "f8ca21573b0c08cf",
+        "order": 1,
+        "disp": false,
+        "width": "17",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f5a14ffd55f6c590",
+        "type": "ui_group",
+        "name": "Group 2",
+        "tab": "f8ca21573b0c08cf",
+        "order": 2,
+        "disp": false,
+        "width": "17",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "198b46051ef9f5b8",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "a5c9d8af6c91220c",
+        "order": 1,
+        "disp": true,
+        "width": 6
+    },
+    {
+        "id": "aa014ce7185298b8",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "baae1e5fffcdafd2",
+        "order": 1,
+        "disp": true,
+        "width": 17,
+        "collapse": false
+    },
+    {
+        "id": "6513a198e70867a4",
+        "type": "ui_group",
+        "name": "Group 2",
+        "tab": "baae1e5fffcdafd2",
+        "order": 2,
+        "disp": true,
+        "width": 17
+    },
+    {
+        "id": "04292aef31305dbc",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "8db80a4ec3db36e2",
+        "order": 1,
+        "disp": true,
+        "width": 17
+    },
+    {
+        "id": "3889236a8cd8608e",
+        "type": "ui_group",
+        "name": "Group 2",
+        "tab": "8db80a4ec3db36e2",
+        "order": 2,
+        "disp": true,
+        "width": 17
+    },
+    {
+        "id": "f8ca21573b0c08cf",
+        "type": "ui_tab",
+        "name": "Chart",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "a5c9d8af6c91220c",
+        "type": "ui_tab",
+        "name": "監視",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "baae1e5fffcdafd2",
+        "type": "ui_tab",
+        "name": "orchid",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "8db80a4ec3db36e2",
+        "type": "ui_tab",
+        "name": "noken",
+        "icon": "dashboard",
+        "order": 4,
+        "disabled": false,
+        "hidden": false
+    }
+]
