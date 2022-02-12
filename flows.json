@@ -592,12 +592,11 @@
         "id": "acc825ed5057a7ff",
         "type": "inject",
         "z": "90c5f99da8f7592e",
-        "d": true,
         "name": "1秒ごとに更新",
         "props": [
             {
                 "p": "filename",
-                "v": "/home/ayu/sonod/state/westlab",
+                "v": "/home/ayu/sonod/state/orchid",
                 "vt": "str"
             }
         ],
@@ -610,16 +609,7 @@
         "y": 1460,
         "wires": [
             [
-                "ba5e3666c2628213",
-                "4a39a83fa872a699",
-                "29565b30e62050db",
-                "d9e0ddb258bad73c",
-                "f70ac609c1802306",
-                "db819ba76fee4a8e",
-                "9fa14cb4911d0e99",
-                "bc5eb918587a91a8",
-                "5ef64e79590eaca8",
-                "1b769ab0c7ce701d"
+                "ba5e3666c2628213"
             ]
         ]
     },
@@ -628,7 +618,7 @@
         "type": "function",
         "z": "90c5f99da8f7592e",
         "name": "",
-        "func": "\nlet sensor_name = \"arashi\";\n\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
+        "func": "\nlet sensor_name = \"ayu\";\n\n\nmsg.filename = `${msg.filename}/${sensor_name}.txt`;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -1301,25 +1291,6 @@
         "wires": []
     },
     {
-        "id": "c047c85517ec4ec9",
-        "type": "http request",
-        "z": "90c5f99da8f7592e",
-        "name": "",
-        "method": "POST",
-        "ret": "txt",
-        "paytoqs": "ignore",
-        "url": "https://notify-api.line.me/api/notify",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "authType": "",
-        "x": 970,
-        "y": 1060,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "cca1f8ea89aa9372",
         "type": "switch",
         "z": "90c5f99da8f7592e",
@@ -1348,17 +1319,19 @@
         "id": "503c9420144888bf",
         "type": "function",
         "z": "90c5f99da8f7592e",
-        "name": "LINE Tokenの設定",
-        "func": "msg.headers = {\n    \"Authorization\": \"Bearer L1OArSqiwLgH4B5D6aOxRsHbAhv9Y2Opn5JW9Xg0UkD\"\n}\n\nmsg.payload = {\n    \"message\": `${msg.place}の${msg.sensor}のプログラムが停止しました`\n}\nreturn msg;",
+        "name": "LINE messageの設定",
+        "func": "\nmsg.payload = `${msg.place}の${msg.sensor}のプログラムが停止しました`\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 770,
+        "x": 780,
         "y": 1060,
         "wires": [
-            []
+            [
+                "6922d103204380f1"
+            ]
         ]
     },
     {
@@ -2024,6 +1997,15 @@
         "wires": [
             []
         ]
+    },
+    {
+        "id": "6922d103204380f1",
+        "type": "Notify",
+        "z": "90c5f99da8f7592e",
+        "name": "sonod",
+        "x": 990,
+        "y": 1060,
+        "wires": []
     },
     {
         "id": "b8bb310206b263d4",
